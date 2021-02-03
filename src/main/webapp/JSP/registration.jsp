@@ -60,7 +60,7 @@
                                        value="${prevFormData.getFirstName()}"
                                        required
                                 >
-                                <c:if test="${firstNameError != null}">
+                                <c:if test="${firstNameError == true}">
                                     <div class="error" role="alert">
                                         <fmt:message key="validation.error.name.empty"/>
                                         <fmt:message key="validation.error.name.size"/>
@@ -84,7 +84,7 @@
                                        value="${prevFormData.getLastName()}"
                                        required
                                 >
-                                <c:if test="${lastNameError != null}">
+                                <c:if test="${lastNameError == true}">
                                     <div class="error" role="alert">
                                         <fmt:message key="validation.error.surname.empty"/>
                                         <fmt:message key="validation.error.surname.size"/>
@@ -108,7 +108,7 @@
                                        required
                                        value="${prevFormData.getEmail()}"
                                 >
-                                <c:if test="${emailError != null}">
+                                <c:if test="${emailError == true}">
                                     <div class="error" role="alert">
                                         <fmt:message key="validation.error.email.empty"/>
                                         <fmt:message key="validation.error.email.invalid"/>
@@ -131,7 +131,7 @@
                                        placeholder="${pass}"
                                        required
                                 >
-                                <c:if test="${passwordError != null}">
+                                <c:if test="${passwordError == true}">
                                     <div class="error" role="alert">
                                         <fmt:message key="validation.error.password.size"/>
                                     </div>
