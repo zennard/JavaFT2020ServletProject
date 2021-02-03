@@ -2,6 +2,7 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.UserLoginDTO;
 import ua.training.servlet_project.controller.dto.UserRegistrationDTO;
 import ua.training.servlet_project.model.dao.DaoFactory;
 import ua.training.servlet_project.model.dao.UserDao;
@@ -22,15 +23,16 @@ public class UserService {
         daoFactory = DaoFactory.getInstance();
     }
 
-    public Optional<User> getUserByEmailAndPassword(String email, String password) {
-        Optional<User> result;
+    public Optional<User> getUserByEmailAndPassword(UserLoginDTO newUser) {
+        Optional<User> user;
 
         try (UserDao userDao = daoFactory.createUserDao()) {
-            result = userDao.findByEmailAndPasswordHash(email, getPasswordHash(password));
+            user = userDao.findByEmailAndPasswordHash(newUser.getEmail(),
+                    getPasswordHash(newUser.getPassword()));
         }
 
-        LOGGER.info(getPasswordHash(password));
-        return result;
+        LOGGER.info(getPasswordHash(newUser.getPassword()));
+        return user;
     }
 
     public void saveNewUser(UserRegistrationDTO userRegDTO) {

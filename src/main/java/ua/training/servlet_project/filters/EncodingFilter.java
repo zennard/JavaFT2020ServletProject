@@ -1,6 +1,9 @@
 package ua.training.servlet_project.filters;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -8,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EncodingFilter implements Filter {
+    private static final Logger LOGGER = LogManager.getLogger(EncodingFilter.class);
     private static Pattern excludeUrls = Pattern.compile("^.*/(css|js)/.*$", Pattern.CASE_INSENSITIVE);
 
     @Override
@@ -18,6 +22,7 @@ public class EncodingFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
         String path = ((HttpServletRequest) servletRequest).getRequestURI();
+
         if (!isExcludedFromFilter(path)) {
             servletResponse.setContentType("text/html");
             servletResponse.setCharacterEncoding("UTF-8");

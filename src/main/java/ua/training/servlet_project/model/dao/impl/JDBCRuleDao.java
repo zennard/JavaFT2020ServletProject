@@ -66,6 +66,10 @@ public class JDBCRuleDao implements RuleDao {
 
     @Override
     public void close() {
-
+        try {
+            connection.close();
+        } catch (SQLException throwable) {
+            LOGGER.error(throwable);
+        }
     }
 }

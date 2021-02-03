@@ -2,6 +2,7 @@ package ua.training.servlet_project.controller.command;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.UserLoginDTO;
 import ua.training.servlet_project.model.entity.User;
 import ua.training.servlet_project.model.service.UserService;
 
@@ -33,7 +34,11 @@ public class Login implements Command {
 
         LOGGER.info(email + " " + password);
 
-        User user = userService.getUserByEmailAndPassword(email, password)
+        User user = userService.getUserByEmailAndPassword(
+                UserLoginDTO.builder()
+                        .email(email)
+                        .password(password)
+                        .build())
                 .orElse(null);
         if (user != null) {
             if (isUserAlreadyLogged(request, email)) {

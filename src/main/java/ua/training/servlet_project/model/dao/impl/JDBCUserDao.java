@@ -1,5 +1,7 @@
 package ua.training.servlet_project.model.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.model.dao.UserDao;
 import ua.training.servlet_project.model.dao.mapper.UserMapper;
 import ua.training.servlet_project.model.entity.User;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class JDBCUserDao implements UserDao {
+    private static final Logger LOGGER = LogManager.getLogger(JDBCUserDao.class);
     private Connection connection;
 
     public JDBCUserDao(Connection connection) {
@@ -37,7 +40,20 @@ public class JDBCUserDao implements UserDao {
 
     @Override
     public Optional<User> findById(Long id) {
-        return null;
+        Optional<User> result = Optional.empty();
+
+        try (PreparedStatement ps = connection.prepareCall("SELECT * FROM user WHERE id = ?")) {
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            UserMapper mapper = new UserMapper();
+            if (rs.next()) {
+                result = Optional.of(mapper.extractFromResultSet(rs));
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return result;
     }
 
     @Override
@@ -62,6 +78,8 @@ public class JDBCUserDao implements UserDao {
     public Optional<User> findByEmailAndPasswordHash(String email, String passwordHash) {
         Optional<User> result = Optional.empty();
 
+        LOGGER.error("here");
+
         try (PreparedStatement ps = connection.prepareCall("SELECT * FROM user WHERE email = ? AND password = ?")) {
             ps.setString(1, email);
             ps.setString(2, passwordHash);
@@ -71,6 +89,7 @@ public class JDBCUserDao implements UserDao {
                 result = Optional.of(mapper.extractFromResultSet(rs));
             }
         } catch (Exception ex) {
+            LOGGER.error(ex);
             throw new RuntimeException(ex);
         }
 
@@ -94,6 +113,10 @@ public class JDBCUserDao implements UserDao {
 
     @Override
     public void close() {
-
+        try {
+            connection.close();
+        } catch (SQLException throwable) {
+            LOGGER.error(throwable);
+        }
     }
 }

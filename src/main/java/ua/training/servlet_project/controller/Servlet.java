@@ -16,19 +16,21 @@ import java.util.regex.Pattern;
 
 public class Servlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(Servlet.class);
-    private static final String INDEX_PAGE = "/JSP/index.jsp";
+    public static final String APARTMENTS_PAGE_REDIRECT = "redirect:/apartments";
     private static final String ROOT_PATTERN = ".*/app/";
-    private static final String COMMAND_NOT_FOUND_EXCEPTION_MESSAGE = "There is no command on such path: ";
     private final Map<String, Command> commands = new HashMap<>();
 
     @Override
     public void init() {
+        commands.put("landing", new Landing());
         commands.put("logout", new LogOut());
         commands.put("login", new Login());
         commands.put("register", new Registration());
         commands.put("exception", new Exception());
         commands.put("apartments", new Apartments());
         commands.put("apartments/\\d+", new ApartmentProfile());
+        commands.put("orders", new Orders());
+        commands.put("orders/update/\\d+", new UpdateOrder());
     }
 
     @Override
@@ -54,7 +56,7 @@ public class Servlet extends HttpServlet {
                 .filter(entry -> Pattern.compile(entry.getKey()).matcher(path).matches())
                 .map(Map.Entry::getValue)
                 .findAny()
-                .orElse(req -> INDEX_PAGE);
+                .orElse(req -> APARTMENTS_PAGE_REDIRECT);
 
         String page = command.execute(request);
         if (page.contains("redirect:")) {

@@ -20,12 +20,26 @@ public class JDBCApartmentTimetableDao implements ApartmentTimetableDao {
 
     @Override
     public void create(ApartmentTimetable entity) {
-
     }
 
     @Override
     public Optional<ApartmentTimetable> findById(Long id) {
-        return null;
+        Optional<ApartmentTimetable> apartmentTimetable = Optional.empty();
+
+        try (PreparedStatement ps = connection.prepareCall("SELECT * FROM apartment_timetable WHERE id = ?")) {
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            ApartmentTimetableMapper mapper = new ApartmentTimetableMapper();
+            if (rs.next()) {
+                apartmentTimetable = Optional.of(mapper.extractFromResultSet(rs));
+            }
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        LOGGER.info(apartmentTimetable);
+        return apartmentTimetable;
     }
 
     @Override

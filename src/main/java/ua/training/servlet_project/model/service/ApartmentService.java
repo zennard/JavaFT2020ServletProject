@@ -2,6 +2,7 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.VacationDateDTO;
 import ua.training.servlet_project.model.dao.ApartmentDao;
 import ua.training.servlet_project.model.dao.ApartmentDescriptionDao;
 import ua.training.servlet_project.model.dao.ApartmentTimetableDao;
@@ -34,7 +35,10 @@ public class ApartmentService {
     }
 
     public Page<Apartment> getAllAvailableApartmentsByDate(Pageable pageable,
-                                                           LocalDate startsAt, LocalDate endsAt) {
+                                                           VacationDateDTO vacationDateDTO) {
+        LocalDate startsAt = vacationDateDTO.getStartsAt();
+        LocalDate endsAt = vacationDateDTO.getEndsAt();
+
         if (endsAt.isBefore(startsAt)) throw new IllegalDateException("Check out time cannot go before check-in!");
 
         LocalDateTime checkIn = LocalDateTime.of(startsAt, LocalTime.of(checkInHours, SETTLEMENT_MINUTES));
@@ -65,7 +69,7 @@ public class ApartmentService {
         return apartmentsPage;
     }
 
-    public Apartment getApartmentByIdAndDate(Long id, LocalDate startsAt, LocalDate endsAt, String lang) {
+    public Apartment getApartmentByIdAndDate(Long id, VacationDateDTO vacationDateDTO, String lang) {
         //@TODO rewrite
 
         Apartment apartment;
@@ -75,8 +79,10 @@ public class ApartmentService {
             LOGGER.info(apartment);
         }
 
-        LocalDateTime checkIn = LocalDateTime.of(startsAt, LocalTime.of(checkInHours, SETTLEMENT_MINUTES));
-        LocalDateTime checkOut = LocalDateTime.of(endsAt, LocalTime.of(checkOutHours, SETTLEMENT_MINUTES));
+        LocalDateTime checkIn = LocalDateTime.of(vacationDateDTO.getStartsAt(),
+                LocalTime.of(checkInHours, SETTLEMENT_MINUTES));
+        LocalDateTime checkOut = LocalDateTime.of(vacationDateDTO.getEndsAt(),
+                LocalTime.of(checkOutHours, SETTLEMENT_MINUTES));
 
         List<ApartmentTimetable> schedule;
         try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {

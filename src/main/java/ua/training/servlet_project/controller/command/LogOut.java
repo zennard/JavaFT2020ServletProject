@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Set;
 
 public class LogOut implements Command {
-    private static final String REDIRECT_INDEX_PAGE = "/JSP/index.jsp";
+    private static final String REDIRECT_LOGIN_PAGE = "redirect:/login?logout";
 
     @Override
     public String execute(HttpServletRequest request) {
@@ -16,7 +16,7 @@ public class LogOut implements Command {
         removeUserFromContext(request, user.getEmail());
         session.removeAttribute("user");
 
-        return REDIRECT_INDEX_PAGE;
+        return REDIRECT_LOGIN_PAGE;
     }
 
     private static void removeUserFromContext(HttpServletRequest request, String email) {

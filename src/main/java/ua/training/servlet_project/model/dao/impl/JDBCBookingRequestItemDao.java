@@ -1,13 +1,17 @@
 package ua.training.servlet_project.model.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.model.dao.BookingRequestItemDao;
 import ua.training.servlet_project.model.entity.BookingRequestItem;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class JDBCBookingRequestItemDao implements BookingRequestItemDao {
+    private static final Logger LOGGER = LogManager.getLogger(JDBCBookingRequestItemDao.class);
     private Connection connection;
 
     public JDBCBookingRequestItemDao(Connection connection) {
@@ -41,6 +45,10 @@ public class JDBCBookingRequestItemDao implements BookingRequestItemDao {
 
     @Override
     public void close() {
-
+        try {
+            connection.close();
+        } catch (SQLException throwable) {
+            LOGGER.error(throwable);
+        }
     }
 }
