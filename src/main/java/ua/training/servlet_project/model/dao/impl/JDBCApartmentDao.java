@@ -50,6 +50,34 @@ public class JDBCApartmentDao implements ApartmentDao {
     }
 
     @Override
+    public List<Apartment> findAllByIds(List<Long> ids) {
+        Map<Long, Apartment> apartments = new LinkedHashMap<>();
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        try (PreparedStatement ps = connection.prepareCall(String.format("SELECT * FROM apartment a WHERE a.id IN (%s)", inSql))
+        ) {
+            //@TODO check if list is empty
+            for (int i = 1; i <= ids.size(); i++) {
+                ps.setLong(i, ids.get(i - 1));
+            }
+
+            ResultSet rs = ps.executeQuery();
+
+            ApartmentMapper apartmentMapper = new ApartmentMapper();
+            while (rs.next()) {
+                Apartment apartment = apartmentMapper
+                        .extractFromResultSet(rs);
+                apartmentMapper
+                        .makeUnique(apartments, apartment);
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+        return new ArrayList<>(apartments.values());
+    }
+
+    @Override
     public List<Apartment> findAll() {
         return null;
     }

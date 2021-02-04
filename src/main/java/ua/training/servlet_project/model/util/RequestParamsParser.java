@@ -10,12 +10,15 @@ import ua.training.servlet_project.model.exceptions.OrderStatusParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RequestParamsParser {
     private static final Logger LOGGER = LogManager.getLogger(RequestParamsParser.class);
     private static final int DEFAULT_DAYS_OFFSET = 3;
-    public static final String LONG_TYPE_SUFFIX = "L";
     //@TODO get from properties
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 2;
@@ -31,6 +34,15 @@ public class RequestParamsParser {
             return LocalDate.parse(dateValue);
         } catch (DateTimeParseException | NullPointerException ex) {
             LOGGER.error("date parse exception: ", ex);
+            return defaultValue;
+        }
+    }
+
+    public static LocalDateTime parseLocalDateTime(String dateValue, LocalDateTime defaultValue) {
+        try {
+            return LocalDateTime.parse(dateValue, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        } catch (DateTimeParseException | NullPointerException ex) {
+            LOGGER.error("local date time parse exception: ", ex);
             return defaultValue;
         }
     }
@@ -112,5 +124,18 @@ public class RequestParamsParser {
         }
 
         return new Pageable(page, size, sortBy);
+    }
+
+    public static List<Long> parseListOfLong(String[] values, RuntimeException ex) {
+        try {
+            List<Long> resultList = new ArrayList<>();
+            for (String paramValue : values) {
+                resultList.add(parseLong(paramValue, ex));
+            }
+            return resultList;
+        } catch (RuntimeException rex) {
+            LOGGER.error(ex);
+            throw ex;
+        }
     }
 }

@@ -6,5 +6,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ApartmentTimetableDao extends GenericDao<ApartmentTimetable> {
-    List<ApartmentTimetable> findAllScheduleByIdAndDate(LocalDateTime checkIn, LocalDateTime checkOut, Long id);
+    List<ApartmentTimetable> findAllScheduleByApartmentIdAndDate(LocalDateTime checkIn, LocalDateTime checkOut, Long id);
 }

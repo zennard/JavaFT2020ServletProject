@@ -2,15 +2,13 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ua.training.servlet_project.controller.dto.OrderDTO;
-import ua.training.servlet_project.controller.dto.OrderItemDTO;
-import ua.training.servlet_project.controller.dto.UpdateOrderDTO;
-import ua.training.servlet_project.controller.dto.UserOrderDTO;
+import ua.training.servlet_project.controller.dto.*;
 import ua.training.servlet_project.model.dao.*;
 import ua.training.servlet_project.model.entity.*;
 import ua.training.servlet_project.model.exceptions.EmptyOrderException;
 import ua.training.servlet_project.model.exceptions.UserNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,10 +18,91 @@ public class OrderService {
     private static final Logger LOGGER = LogManager.getLogger(OrderService.class);
     public static final String NOT_FOUND_ORDER = "Cannot delete non-existing order with id ";
     private static final String NOT_FOUND_RECORD = "Illegal record, record with this date doesn't exist!";
+    private static final String RECORD_ALREADY_EXISTS = "Illegal record, record with this date already exists!";
     private final DaoFactory daoFactory;
 
     public OrderService() {
         daoFactory = DaoFactory.getInstance();
+    }
+
+    public Long createNewOrder(OrderCreationDTO orderDTO) {
+        orderDTO.getOrderItems().stream()
+                .filter(item -> recordExists(orderDTO.getStartsAt(), orderDTO.getEndsAt(), item.getApartmentId()))
+                .findFirst()
+                .ifPresent(item -> {
+                    throw new IllegalArgumentException(RECORD_ALREADY_EXISTS);
+                });
+
+        User user;
+        try (UserDao userDao = daoFactory.createUserDao()) {
+            user = userDao.findByEmail(orderDTO.getUserEmail())
+                    .orElseThrow(() -> new UserNotFoundException("User with this credentials wasn't found!"));
+        }
+
+        Order order = getOrder(orderDTO, user);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        List<ApartmentTimetable> schedule = new ArrayList<>();
+
+        List<OrderItemDTO> orderItemsDTO = orderDTO.getOrderItems();
+        for (OrderItemDTO o : orderItemsDTO) {
+            Apartment apartment = new Apartment();
+            apartment.setId(o.getApartmentId());
+
+            ApartmentTimetable scheduleItem = getScheduleItem(orderDTO, apartment);
+            schedule.add(scheduleItem);
+
+            orderItems.add(
+                    OrderItem.builder()
+                            .order(order)
+                            .startsAt(orderDTO.getStartsAt())
+                            .endsAt(orderDTO.getEndsAt())
+                            .apartment(apartment)
+                            .schedule(scheduleItem)
+                            .price(o.getPrice())
+                            .amount(o.getAmount())
+                            .build()
+            );
+        }
+
+        return saveOrder(order, schedule, orderItems);
+    }
+
+    private Order getOrder(OrderCreationDTO orderDTO, User user) {
+        return Order
+                .builder()
+                .orderDate(orderDTO.getOrderDate())
+                .orderStatus(OrderStatus.NEW)
+                .user(user)
+                .build();
+    }
+
+    private ApartmentTimetable getScheduleItem(OrderCreationDTO orderDTO, Apartment apartment) {
+        return ApartmentTimetable.builder()
+                .apartment(apartment)
+                .startsAt(orderDTO.getStartsAt())
+                .endsAt(orderDTO.getEndsAt())
+                .status(RoomStatus.BOOKED)
+                .build();
+    }
+
+    public Long saveOrder(Order order, List<ApartmentTimetable> schedule, List<OrderItem> items) {
+        try (OrderDao orderDao = daoFactory.createOrderDao()) {
+            return orderDao.saveNewOrder(order, schedule, items);
+        }
+//        orderRepository.save(order);
+//        apartmentTimetableRepository.saveAll(schedule);
+//        orderItemRepository.saveAll(items);
+//        return order.getId();
+    }
+
+    public boolean recordExists(LocalDateTime startsAt, LocalDateTime endsAt, Long apartmentId) {
+        List<ApartmentTimetable> schedule;
+        try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {
+            schedule = apartmentTimetableDao.findAllScheduleByApartmentIdAndDate(
+                    startsAt, endsAt, apartmentId);
+        }
+        return !schedule.isEmpty();
     }
 
     public void updateOrderStatus(UpdateOrderDTO newOrderDTO) {

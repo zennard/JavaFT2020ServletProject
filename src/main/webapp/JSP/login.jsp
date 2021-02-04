@@ -34,16 +34,12 @@
                     <div class="card-body">
                         <c:if test="${error == 'credentials'}">
                             <div class="alert alert-danger" role="alert">
-                                <p>
-                                    <fmt:message key="validation.error.input.credentials"/>
-                                </p>
+                                <fmt:message key="validation.error.input.credentials"/>
                             </div>
                         </c:if>
                         <c:if test="${param.logout != null}">
                             <div class="alert alert-info" role="alert">
-                                <p>
-                                    <fmt:message key="information.logout.successful"/>
-                                </p>
+                                <fmt:message key="information.logout.successful"/>
                             </div>
                         </c:if>
 

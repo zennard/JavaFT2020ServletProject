@@ -2,6 +2,7 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.OrderItemDTO;
 import ua.training.servlet_project.controller.dto.VacationDateDTO;
 import ua.training.servlet_project.model.dao.ApartmentDao;
 import ua.training.servlet_project.model.dao.ApartmentDescriptionDao;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ApartmentService {
     private static final Logger LOGGER = LogManager.getLogger(ApartmentService.class);
@@ -86,7 +88,7 @@ public class ApartmentService {
 
         List<ApartmentTimetable> schedule;
         try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {
-            schedule = apartmentTimetableDao.findAllScheduleByIdAndDate(checkIn, checkOut, apartment.getId());
+            schedule = apartmentTimetableDao.findAllScheduleByApartmentIdAndDate(checkIn, checkOut, apartment.getId());
         }
 
         if (schedule.isEmpty()) {
@@ -111,17 +113,20 @@ public class ApartmentService {
         return apartment;
     }
 
-//    public List<OrderItemDTO> getAllApartmentsByIds(List<Long> ids) {
-//        List<Apartment> apartments = apartmentRepository.findAllById(ids);
-//
-//        return apartments
-//                .stream()
-//                .map(a -> OrderItemDTO.builder()
-//                        .apartmentId(a.getId())
-//                        .price(a.getPrice())
-//                        .amount(1)
-//                        .build()
-//                )
-//                .collect(Collectors.toList());
-//    }
+    public List<OrderItemDTO> getAllApartmentsByIds(List<Long> ids) {
+        List<Apartment> apartments;
+        try (ApartmentDao apartmentDao = daoFactory.createApartmentDao()) {
+            apartments = apartmentDao.findAllByIds(ids);
+        }
+
+        return apartments
+                .stream()
+                .map(a -> OrderItemDTO.builder()
+                        .apartmentId(a.getId())
+                        .price(a.getPrice())
+                        .amount(1)
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 }

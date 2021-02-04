@@ -8,4 +8,6 @@ public interface OrderDao extends GenericDao<Order> {
     Page<Order> findAllByOrderStatus(OrderStatus status, Pageable pageable);
 
     void updateOrderAndTimeslotStatus(Order order, List<ApartmentTimetable> schedule);
+
+    Long saveNewOrder(Order order, List<ApartmentTimetable> schedule, List<OrderItem> items);
 }

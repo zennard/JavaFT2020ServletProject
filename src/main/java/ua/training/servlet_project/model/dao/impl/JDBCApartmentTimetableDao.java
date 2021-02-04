@@ -48,7 +48,7 @@ public class JDBCApartmentTimetableDao implements ApartmentTimetableDao {
     }
 
     @Override
-    public List<ApartmentTimetable> findAllScheduleByIdAndDate(LocalDateTime checkIn, LocalDateTime checkOut, Long id) {
+    public List<ApartmentTimetable> findAllScheduleByApartmentIdAndDate(LocalDateTime checkIn, LocalDateTime checkOut, Long id) {
         Map<Long, ApartmentTimetable> schedules = new LinkedHashMap<>();
 
         try (PreparedStatement ps = connection.prepareCall(
