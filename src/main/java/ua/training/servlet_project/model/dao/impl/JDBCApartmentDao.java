@@ -16,6 +16,7 @@ import java.util.*;
 
 public class JDBCApartmentDao implements ApartmentDao {
     private static final Logger LOGGER = LogManager.getLogger(JDBCApartmentDao.class);
+    private static final String COUNT_COLUMN_NAME = "COUNT(*)";
     private Connection connection;
 
     public JDBCApartmentDao(Connection connection) {
@@ -147,7 +148,8 @@ public class JDBCApartmentDao implements ApartmentDao {
             }
 
             if (totalElementsResultSet.next()) {
-                totalPages = totalElementsResultSet.getInt("COUNT(*)") / pageable.getPageSize();
+                totalPages = apartmentMapper.getTotalPages(totalElementsResultSet,
+                        COUNT_COLUMN_NAME, pageable.getPageSize());
                 LOGGER.info(totalPages);
             }
         } catch (Exception ex) {

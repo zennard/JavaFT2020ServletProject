@@ -3,12 +3,14 @@ package ua.training.servlet_project.model.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.UserLoginDTO;
+import ua.training.servlet_project.controller.dto.UserProfileDTO;
 import ua.training.servlet_project.controller.dto.UserRegistrationDTO;
 import ua.training.servlet_project.model.dao.DaoFactory;
 import ua.training.servlet_project.model.dao.UserDao;
 import ua.training.servlet_project.model.entity.RoleType;
 import ua.training.servlet_project.model.entity.User;
 import ua.training.servlet_project.model.exceptions.IllegalEmailException;
+import ua.training.servlet_project.model.exceptions.UserNotFoundException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 public class UserService {
     private static final Logger LOGGER = LogManager.getLogger(UserService.class);
+    private static final String USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE = "Cannot find user by email";
     private final DaoFactory daoFactory;
 
     public UserService() {
@@ -33,6 +36,38 @@ public class UserService {
 
         LOGGER.info(getPasswordHash(newUser.getPassword()));
         return user;
+    }
+
+    public UserProfileDTO getUserById(Long id) {
+        User user;
+        try (UserDao userDao = daoFactory.createUserDao()) {
+            user = userDao.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE));
+        }
+
+        return UserProfileDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .role(user.getRole())
+                .build();
+    }
+
+    public UserProfileDTO getUserByEmail(String email) {
+        User user;
+        try (UserDao userDao = daoFactory.createUserDao()) {
+            user = userDao.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE));
+        }
+
+        return UserProfileDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .role(user.getRole())
+                .build();
     }
 
     public void saveNewUser(UserRegistrationDTO userRegDTO) {

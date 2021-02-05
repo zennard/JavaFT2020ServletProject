@@ -83,7 +83,6 @@
                     <tbody>
                         <c:set var="format"
                                value="${sessionScope.lang == 'ua' ? 'dd-MM-yyyy HH:mm' : 'MM-dd-yyyy HH:mm'}"/>
-                        <%--                        <jsp:useBean id="i18n" class="ua.training.servlet_project.model.util.Internationalization"/>--%>
                         <c:forEach var="a" items="${apartments}">
                             <c:forEach var="time_slot" items="${a.getSchedule()}">
                                 <tr>

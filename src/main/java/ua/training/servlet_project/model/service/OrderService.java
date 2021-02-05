@@ -90,10 +90,6 @@ public class OrderService {
         try (OrderDao orderDao = daoFactory.createOrderDao()) {
             return orderDao.saveNewOrder(order, schedule, items);
         }
-//        orderRepository.save(order);
-//        apartmentTimetableRepository.saveAll(schedule);
-//        orderItemRepository.saveAll(items);
-//        return order.getId();
     }
 
     public boolean recordExists(LocalDateTime startsAt, LocalDateTime endsAt, Long apartmentId) {
@@ -187,6 +183,32 @@ public class OrderService {
                 .build();
     }
 
+    private List<OrderItemDTO> getOrderItemDTOS(List<OrderItem> items) {
+        return items
+                .stream()
+                .map(item -> OrderItemDTO.builder()
+                        .amount(item.getAmount())
+                        .price(item.getPrice())
+                        .apartmentId(item.getApartment().getId())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    public Page<UserOrderDTO> getAllUserOrders(Pageable pageable, Long userId) {
+        Page<Order> ordersPage;
+        try (OrderDao orderDao = daoFactory.createOrderDao()) {
+            ordersPage = orderDao.findAllByUserId(userId, pageable);
+        }
+
+        List<UserOrderDTO> ordersDTO = ordersPage.getContent().stream()
+                .map(this::getUserOrderDTO)
+                .collect(Collectors.toList());
+
+        return new Page<>(ordersDTO, ordersPage.getPageable(),
+                ordersPage.getTotalPages());
+    }
+
     private UserOrderDTO getUserOrderDTO(Order o) {
         List<OrderItem> items;
         try (OrderItemDao orderItemDao = daoFactory.createOrderItemDao()) {
@@ -207,17 +229,5 @@ public class OrderService {
                 .endsAt(items.get(0).getEndsAt())
                 .orderItems(itemsDTO)
                 .build();
-    }
-
-    private List<OrderItemDTO> getOrderItemDTOS(List<OrderItem> items) {
-        return items
-                .stream()
-                .map(item -> OrderItemDTO.builder()
-                        .amount(item.getAmount())
-                        .price(item.getPrice())
-                        .apartmentId(item.getApartment().getId())
-                        .build()
-                )
-                .collect(Collectors.toList());
     }
 }

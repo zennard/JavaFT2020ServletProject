@@ -16,6 +16,7 @@ public class JDBCOrderDao implements OrderDao {
     private static final Logger LOGGER = LogManager.getLogger(JDBCOrderDao.class);
     private static final String ORDER_NOT_FOUND_EXCEPTION_MESSAGE = "Cannot find order with id: ";
     private static final String ORDER_NOT_CREATED_EXCEPTION_MESSAGE = "Creating order failed, no ID obtained.";
+    private static final String COUNT_COLUMN_NAME = "COUNT(*)";
     private Connection connection;
 
     public JDBCOrderDao(Connection connection) {
@@ -223,7 +224,52 @@ public class JDBCOrderDao implements OrderDao {
             }
 
             if (totalElementsResultSet.next()) {
-                totalPages = totalElementsResultSet.getInt("COUNT(*)") / pageable.getPageSize();
+                totalPages = orderMapper.getTotalPages(totalElementsResultSet,
+                        COUNT_COLUMN_NAME, pageable.getPageSize());
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+        return new Page<>(new ArrayList<>(orders.values()), pageable, totalPages);
+    }
+
+    @Override
+    public Page<Order> findAllByUserId(Long userId, Pageable pageable) {
+        Map<Long, Order> orders = new LinkedHashMap<>();
+        int totalPages = 0;
+
+        try (PreparedStatement ps = connection.prepareCall(
+                "SELECT * FROM `order` o " +
+                        "WHERE o.user_id = ? " +
+                        "ORDER BY o.id " +
+                        "LIMIT ? " +
+                        "OFFSET ? ");
+             PreparedStatement countQuery = connection.prepareCall(
+                     "SELECT COUNT(*) FROM `order` o " +
+                             "WHERE o.user_id = ? "
+             )
+        ) {
+            ps.setLong(1, userId);
+            ps.setInt(2, pageable.getPageSize());
+            ps.setInt(3, pageable.getPageNumber() * pageable.getPageSize());
+
+            countQuery.setLong(1, userId);
+
+            ResultSet rs = ps.executeQuery();
+            ResultSet totalElementsResultSet = countQuery.executeQuery();
+
+            OrderMapper orderMapper = new OrderMapper();
+            while (rs.next()) {
+                Order order = orderMapper
+                        .extractFromResultSet(rs);
+                orderMapper
+                        .makeUnique(orders, order);
+            }
+
+            if (totalElementsResultSet.next()) {
+                totalPages = orderMapper.getTotalPages(totalElementsResultSet,
+                        COUNT_COLUMN_NAME, pageable.getPageSize());
             }
         } catch (SQLException ex) {
             LOGGER.error(ex);

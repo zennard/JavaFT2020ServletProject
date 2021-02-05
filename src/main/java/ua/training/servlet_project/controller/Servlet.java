@@ -31,6 +31,7 @@ public class Servlet extends HttpServlet {
         commands.put("apartments/\\d+", new ApartmentProfile());
         commands.put("orders", new Orders());
         commands.put("orders/update/\\d+", new UpdateOrder());
+        commands.put("users/\\d+", new UserProfile());
     }
 
     @Override
