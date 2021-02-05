@@ -2,11 +2,14 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.UserDTO;
 import ua.training.servlet_project.controller.dto.UserLoginDTO;
 import ua.training.servlet_project.controller.dto.UserProfileDTO;
 import ua.training.servlet_project.controller.dto.UserRegistrationDTO;
 import ua.training.servlet_project.model.dao.DaoFactory;
 import ua.training.servlet_project.model.dao.UserDao;
+import ua.training.servlet_project.model.entity.Page;
+import ua.training.servlet_project.model.entity.Pageable;
 import ua.training.servlet_project.model.entity.RoleType;
 import ua.training.servlet_project.model.entity.User;
 import ua.training.servlet_project.model.exceptions.IllegalEmailException;
@@ -15,7 +18,9 @@ import ua.training.servlet_project.model.exceptions.UserNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserService {
     private static final Logger LOGGER = LogManager.getLogger(UserService.class);
@@ -62,6 +67,30 @@ public class UserService {
         }
 
         return UserProfileDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .role(user.getRole())
+                .build();
+    }
+
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        Page<User> usersPage;
+        try (UserDao userDao = daoFactory.createUserDao()) {
+            usersPage = userDao.findAll(pageable);
+        }
+
+        List<UserDTO> usersDTO = usersPage.getContent().stream()
+                .map(this::getUserDTO)
+                .collect(Collectors.toList());
+
+        return new Page<>(usersDTO, usersPage.getPageable(),
+                usersPage.getTotalPages());
+    }
+
+    private UserDTO getUserDTO(User user) {
+        return UserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())

@@ -22,7 +22,7 @@ public class Servlet extends HttpServlet {
 
     @Override
     public void init() {
-        commands.put("landing", new Landing());
+        commands.put("", new Landing());
         commands.put("logout", new LogOut());
         commands.put("login", new Login());
         commands.put("register", new Registration());
@@ -31,6 +31,7 @@ public class Servlet extends HttpServlet {
         commands.put("apartments/\\d+", new ApartmentProfile());
         commands.put("orders", new Orders());
         commands.put("orders/update/\\d+", new UpdateOrder());
+        commands.put("users", new Users());
         commands.put("users/\\d+", new UserProfile());
     }
 

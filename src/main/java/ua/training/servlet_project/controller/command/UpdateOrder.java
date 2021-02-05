@@ -23,7 +23,7 @@ public class UpdateOrder implements Command {
     public static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/orders/update/(\\d+).*(?!a-zA-Z|/)$");
     private static final String ORDER_NOT_FOUND_EXCEPTION_MESSAGE = "Order not found by id";
     private static final String FORBIDDEN_PAGE_EXCEPTION_MESSAGE = "Cannot access this page";
-    private static final String ORDERS_PAGE_REDIRECT = "redirect:/orders";
+    private static final String APARTMENTS_PAGE_REDIRECT = "redirect:/apartments";
     private final OrderService orderService;
 
     public UpdateOrder() {
@@ -46,13 +46,13 @@ public class UpdateOrder implements Command {
                         throw new ForbiddenPageException(FORBIDDEN_PAGE_EXCEPTION_MESSAGE);
                     }
                 });
-        
+
         orderService.updateOrderStatus(
                 UpdateOrderDTO.builder()
                         .id(id)
                         .status(newStatus)
                         .build()
         );
-        return ORDERS_PAGE_REDIRECT;
+        return APARTMENTS_PAGE_REDIRECT;
     }
 }
