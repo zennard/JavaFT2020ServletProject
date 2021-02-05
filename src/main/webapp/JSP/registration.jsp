@@ -130,6 +130,7 @@
                                        id="inputPassword"
                                        placeholder="${pass}"
                                        required
+                                       onkeyup='check();'
                                 >
                                 <c:if test="${passwordError == true}">
                                     <div class="error" role="alert">

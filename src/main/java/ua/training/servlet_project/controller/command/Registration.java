@@ -3,7 +3,7 @@ package ua.training.servlet_project.controller.command;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.UserRegistrationDTO;
-import ua.training.servlet_project.model.ValidationResult;
+import ua.training.servlet_project.model.entity.ValidationResult;
 import ua.training.servlet_project.model.service.UserService;
 import ua.training.servlet_project.model.util.RequestConverter;
 import ua.training.servlet_project.model.util.Validator;

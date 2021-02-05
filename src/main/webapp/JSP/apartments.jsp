@@ -40,10 +40,14 @@
 
             <c:set var="apartments" value="${pageContextVar.getApartments()}"/>
             <main class="container-md">
-                <table class="table">
+                <table class="table" style="margin-top: 5px">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col"><fmt:message key="apartments.label.apartment.id"/></th>
+                            <th scope="col" class="active-sort-tab" style="background-color: black;">
+                                <a class="sort-link" onclick="onSortButtonClick()" data-type="id">
+                                    <fmt:message key="apartments.label.apartment.id"/>
+                                </a>
+                            </th>
                             <th scope="col"><fmt:message key="apartments.label.check.in"/></th>
                             <th scope="col"><fmt:message key="apartments.label.check.out"/></th>
                             <th scope="col" class="active-sort-tab" style="background-color: black;">

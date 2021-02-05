@@ -1,7 +1,7 @@
 package ua.training.servlet_project.model.util;
 
 import ua.training.servlet_project.controller.dto.UserRegistrationDTO;
-import ua.training.servlet_project.model.ValidationResult;
+import ua.training.servlet_project.model.entity.ValidationResult;
 
 import java.util.regex.Pattern;
 
