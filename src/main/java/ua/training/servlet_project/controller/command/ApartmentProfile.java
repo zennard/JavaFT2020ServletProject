@@ -26,7 +26,6 @@ public class ApartmentProfile implements Command {
     private static final String APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE = "Apartment not found by id";
     private static final String APARTMENT_PAGE = "/JSP/apartment.jsp";
     private static final int SETTLEMENT_MINUTES = 0;
-    //@TODO move to some constants class
     private final Integer checkInHours;
     private final Integer checkOutHours;
     private ApartmentService apartmentService;

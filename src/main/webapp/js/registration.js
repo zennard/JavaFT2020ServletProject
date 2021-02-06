@@ -1,4 +1,4 @@
-const check = function () {
+const check = function (msg) {
     const passwordValue = document.getElementById('inputPassword').value;
     const repeatedPasswordValue = document.getElementById('confirmPassword').value;
     const fieldsEmpty = passwordValue === "" && repeatedPasswordValue === "";
@@ -7,7 +7,7 @@ const check = function () {
         document.getElementById('submit').disabled = false;
     } else {
         document.getElementById('message').style.color = 'red';
-        document.getElementById('message').innerHTML = 'Not matching';
+        document.getElementById('message').innerHTML = msg;
         document.getElementById('submit').disabled = true;
     }
 }

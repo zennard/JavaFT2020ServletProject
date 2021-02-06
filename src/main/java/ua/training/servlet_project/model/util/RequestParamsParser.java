@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.VacationDateDTO;
 import ua.training.servlet_project.model.entity.OrderStatus;
 import ua.training.servlet_project.model.entity.Pageable;
+import ua.training.servlet_project.model.entity.RoomType;
 import ua.training.servlet_project.model.entity.SortType;
 import ua.training.servlet_project.model.exceptions.OrderStatusParseException;
 
@@ -56,6 +57,15 @@ public class RequestParamsParser {
         }
     }
 
+    public static Integer parseInteger(String integerValue, RuntimeException ex) {
+        try {
+            return Integer.valueOf(integerValue);
+        } catch (NumberFormatException nex) {
+            LOGGER.error(ex);
+            throw ex;
+        }
+    }
+
     public static Long parseLong(String longValue, Long defaultValue) {
         try {
             return Long.valueOf(longValue);
@@ -93,12 +103,22 @@ public class RequestParamsParser {
         }
     }
 
-    public static OrderStatus parseOrderStatus(String orderValue) {
+    public static OrderStatus parseOrderStatus(String statusValue) {
         try {
-            return OrderStatus.valueOf(orderValue.toUpperCase());
+            return OrderStatus.valueOf(statusValue.toUpperCase());
         } catch (NullPointerException | IllegalArgumentException ex) {
             LOGGER.error("order by status parse exception: ", ex);
             throw new OrderStatusParseException("Cannot parse order status: ", ex);
+        }
+    }
+
+    public static RoomType parseRoomType(String typeValue, RuntimeException ex) {
+        try {
+            return RoomType.valueOf(typeValue.toUpperCase());
+        } catch (NullPointerException | IllegalArgumentException iex) {
+            LOGGER.error("order by status parse exception: ", iex);
+            LOGGER.error(ex);
+            throw ex;
         }
     }
 
@@ -131,6 +151,32 @@ public class RequestParamsParser {
             List<Long> resultList = new ArrayList<>();
             for (String paramValue : values) {
                 resultList.add(parseLong(paramValue, ex));
+            }
+            return resultList;
+        } catch (RuntimeException rex) {
+            LOGGER.error(ex);
+            throw ex;
+        }
+    }
+
+    public static List<Integer> parseListOfInteger(String[] values, RuntimeException ex) {
+        try {
+            List<Integer> resultList = new ArrayList<>();
+            for (String paramValue : values) {
+                resultList.add(parseInteger(paramValue, ex));
+            }
+            return resultList;
+        } catch (RuntimeException rex) {
+            LOGGER.error(ex);
+            throw ex;
+        }
+    }
+
+    public static List<RoomType> parseListOfRoomType(String[] values, RuntimeException ex) {
+        try {
+            List<RoomType> resultList = new ArrayList<>();
+            for (String paramValue : values) {
+                resultList.add(parseRoomType(paramValue, ex));
             }
             return resultList;
         } catch (RuntimeException rex) {

@@ -147,6 +147,8 @@
         </script>
         <script src="<c:url value = "/js/datepicker.js"/>">
         </script>
+        <script src="<c:url value = "/js/pager.js"/>">
+        </script>
         <script src="<c:url value = "/js/apartments.js"/>">
         </script>
         <script src="<c:url value = "/js/header.js"/>" crossorigin="anonymous">

@@ -116,6 +116,8 @@
                                 </c:if>
                             </div>
 
+                            <fmt:message var="passwordMismatchMsgValue"
+                                         key="validation.error.input.password.does.not.matches"/>
                             <div class="input-group form-group align-items-center">
                                 <label for="inputPassword" class="card-input">
                                     <fmt:message key="input.password"/>
@@ -130,7 +132,7 @@
                                        id="inputPassword"
                                        placeholder="${pass}"
                                        required
-                                       onkeyup='check();'
+                                       onkeyup='check("${passwordMismatchMsgValue}");'
                                 >
                                 <c:if test="${passwordError == true}">
                                     <div class="error" role="alert">
@@ -153,7 +155,7 @@
                                        id="confirmPassword"
                                        placeholder="${confirmPass}"
                                        required
-                                       onkeyup='check();'/>
+                                       onkeyup='check("${passwordMismatchMsgValue}");'/>
                                 <div class="error"
                                      id="message"
                                      role="alert">

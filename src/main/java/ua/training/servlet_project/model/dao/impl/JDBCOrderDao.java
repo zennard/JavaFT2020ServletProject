@@ -68,7 +68,7 @@ public class JDBCOrderDao implements OrderDao {
                     ps.addBatch();
                 }
 
-                ps.executeUpdate();
+                ps.executeBatch();
 
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     while (generatedKeys.next()) {
@@ -98,7 +98,7 @@ public class JDBCOrderDao implements OrderDao {
                     ps.addBatch();
                 }
 
-                ps.executeUpdate();
+                ps.executeBatch();
             } catch (SQLException ex) {
                 LOGGER.error("Order items creation exception: " + ex);
                 throw new EntityCreationException(ex);

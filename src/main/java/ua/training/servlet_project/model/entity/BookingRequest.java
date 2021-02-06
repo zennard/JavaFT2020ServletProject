@@ -10,17 +10,19 @@ public class BookingRequest {
     private LocalDateTime startsAt;
     private LocalDateTime endsAt;
     private List<BookingRequestItem> requestItems;
+    private RequestStatus requestStatus;
 
     public BookingRequest() {
     }
 
-    public BookingRequest(Long id, User user, LocalDateTime requestDate, LocalDateTime startsAt, LocalDateTime endsAt, List<BookingRequestItem> requestItems) {
+    public BookingRequest(Long id, User user, LocalDateTime requestDate, LocalDateTime startsAt, LocalDateTime endsAt, List<BookingRequestItem> requestItems, RequestStatus requestStatus) {
         this.id = id;
         this.user = user;
         this.requestDate = requestDate;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.requestItems = requestItems;
+        this.requestStatus = requestStatus;
     }
 
     public Long getId() {
@@ -71,6 +73,14 @@ public class BookingRequest {
         this.requestItems = requestItems;
     }
 
+    public RequestStatus getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(RequestStatus requestStatus) {
+        this.requestStatus = requestStatus;
+    }
+
     @Override
     public String toString() {
         return "BookingRequest{" +
@@ -79,6 +89,8 @@ public class BookingRequest {
                 ", requestDate=" + requestDate +
                 ", startsAt=" + startsAt +
                 ", endsAt=" + endsAt +
+                ", requestItems=" + requestItems +
+                ", requestStatus=" + requestStatus +
                 '}';
     }
 
@@ -93,6 +105,7 @@ public class BookingRequest {
         private LocalDateTime startsAt;
         private LocalDateTime endsAt;
         private List<BookingRequestItem> requestItems;
+        private RequestStatus requestStatus;
 
         BookingRequestBuilder() {
         }
@@ -127,8 +140,13 @@ public class BookingRequest {
             return this;
         }
 
+        public BookingRequestBuilder requestStatus(RequestStatus requestStatus) {
+            this.requestStatus = requestStatus;
+            return this;
+        }
+
         public BookingRequest build() {
-            return new BookingRequest(id, user, requestDate, startsAt, endsAt, requestItems);
+            return new BookingRequest(id, user, requestDate, startsAt, endsAt, requestItems, requestStatus);
         }
     }
 }

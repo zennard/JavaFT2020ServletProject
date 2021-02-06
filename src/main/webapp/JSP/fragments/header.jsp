@@ -49,6 +49,20 @@
                                     <fmt:message key="navigation.section.orders"/>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="${param.module == 'booking_requests' ? 'nav-link active' : 'nav-link'}"
+                                   href="/app/booking-requests?page=0&size=2">
+                                    <fmt:message key="navigation.section.booking.requests"/>
+                                </a>
+                            </li>
+                        </c:if>
+                        <c:if test="${user.getRole().toString() == 'ROLE_USER'}">
+                            <li class="nav-item">
+                                <a class="${param.module == 'booking_requests_creation' ? 'nav-link active' : 'nav-link'}"
+                                   href="/app/booking-requests/creation">
+                                    <fmt:message key="navigation.section.booking.requests.creation"/>
+                                </a>
+                            </li>
                         </c:if>
                         <c:if test="${not empty user}">
                             <li class="nav-item">
