@@ -2,13 +2,11 @@ package ua.training.servlet_project.model.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.ApartmentCriteriaDTO;
 import ua.training.servlet_project.model.dao.ApartmentDao;
 import ua.training.servlet_project.model.dao.mapper.ApartmentMapper;
 import ua.training.servlet_project.model.dao.mapper.ApartmentTimetableMapper;
-import ua.training.servlet_project.model.entity.Apartment;
-import ua.training.servlet_project.model.entity.ApartmentTimetable;
-import ua.training.servlet_project.model.entity.Page;
-import ua.training.servlet_project.model.entity.Pageable;
+import ua.training.servlet_project.model.entity.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -126,6 +124,121 @@ public class JDBCApartmentDao implements ApartmentDao {
             ps.setTimestamp(6, Timestamp.valueOf(checkOut));
             ps.setInt(7, pageable.getPageSize());
             ps.setInt(8, pageable.getPageSize() * pageable.getPageNumber());
+
+            ResultSet rs = ps.executeQuery();
+            ResultSet totalElementsResultSet = countQuery.executeQuery();
+
+            ApartmentMapper apartmentMapper = new ApartmentMapper();
+            ApartmentTimetableMapper apartmentTimetableMapper = new ApartmentTimetableMapper();
+            while (rs.next()) {
+                Apartment apartment = apartmentMapper
+                        .extractFromResultSet(rs);
+                LOGGER.info(apartment);
+                ApartmentTimetable schedule = apartmentTimetableMapper
+                        .extractFromResultSet(rs);
+                apartment = apartmentMapper
+                        .makeUnique(apartments, apartment);
+                schedule = apartmentTimetableMapper
+                        .makeUnique(schedules, schedule);
+                if (schedule.getStartsAt() != null && schedule.getEndsAt() != null) {
+                    apartment.getSchedule().add(schedule);
+                }
+            }
+
+            if (totalElementsResultSet.next()) {
+                totalPages = apartmentMapper.getTotalPages(totalElementsResultSet,
+                        COUNT_COLUMN_NAME, pageable.getPageSize());
+                LOGGER.info(totalPages);
+            }
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        return new Page<>(new ArrayList<>(apartments.values()), pageable, totalPages);
+    }
+
+    @Override
+    public Page<Apartment> findAllFreeAvailableByDate(LocalDateTime checkIn, LocalDateTime checkOut,
+                                                      Pageable pageable, ApartmentCriteriaDTO apartmentCriteriaDTO) {
+        Map<Long, Apartment> apartments = new LinkedHashMap<>();
+        Map<Long, ApartmentTimetable> schedules = new LinkedHashMap<>();
+        int totalPages = 0;
+        List<RoomType> types = apartmentCriteriaDTO.getTypes();
+        String status = apartmentCriteriaDTO.getStatus().toString();
+        String inSql = String.join(",", Collections.nCopies(types.size(), "?"));
+
+        LOGGER.info(checkIn);
+        LOGGER.info(checkOut);
+        LOGGER.info(pageable);
+
+        try (PreparedStatement ps = connection.prepareCall(
+                String.format("SELECT id, beds_count," +
+                        " price, type, starts_at," +
+                        " ends_at, status, slot_id " +
+                        "FROM apartment ap " +
+                        "LEFT JOIN " +
+                        "    (SELECT starts_at, ends_at, status, apartment_id, t.id as slot_id " +
+                        "     FROM apartment a " +
+                        "     LEFT JOIN apartment_timetable t " +
+                        "     ON a.id = t.apartment_id " +
+                        "     WHERE is_available = true AND (" +
+                        "       t.starts_at <= ? AND t.ends_at >= ? OR " +
+                        "       t.starts_at BETWEEN ? AND ? OR " +
+                        "       t.ends_at BETWEEN ? AND ? " +
+                        "     ) " +
+                        ") AS r " +
+                        "ON ap.id = r.apartment_id " +
+                        "WHERE type IN (%s) " +
+                        "AND COALESCE(status, 'FREE') = '%s' " +
+                        "ORDER BY id " +
+                        "LIMIT ? " +
+                        "OFFSET ? ", inSql, status));
+             PreparedStatement countQuery = connection.prepareCall(
+                     String.format("SELECT COUNT(*) FROM apartment ap " +
+                                     "LEFT JOIN " +
+                                     "    (SELECT starts_at, ends_at, status, apartment_id, t.id as slot_id " +
+                                     "     FROM apartment a " +
+                                     "     LEFT JOIN apartment_timetable t " +
+                                     "     ON a.id = t.apartment_id " +
+                                     "     WHERE is_available = true AND (" +
+                                     "       t.starts_at <= ? AND t.ends_at >= ? OR " +
+                                     "       t.starts_at BETWEEN ? AND ? OR " +
+                                     "       t.ends_at BETWEEN ? AND ? " +
+                                     "     ) " +
+                                     ") AS r " +
+                                     "ON ap.id = r.apartment_id " +
+                                     "WHERE type IN (%s) " +
+                                     "AND COALESCE(status, 'FREE') = '%s' "
+                             , inSql, status)
+             )
+        ) {
+            ps.setTimestamp(1, Timestamp.valueOf(checkIn));
+            ps.setTimestamp(2, Timestamp.valueOf(checkOut));
+            ps.setTimestamp(3, Timestamp.valueOf(checkIn));
+            ps.setTimestamp(4, Timestamp.valueOf(checkOut));
+            ps.setTimestamp(5, Timestamp.valueOf(checkIn));
+            ps.setTimestamp(6, Timestamp.valueOf(checkOut));
+
+            //@TODO refactor
+            int count = 7;
+            for (int i = 0; i < types.size(); i++, count++) {
+                ps.setString(count, types.get(i).toString());
+            }
+            ps.setInt(count, pageable.getPageSize());
+            ps.setInt(count + 1, pageable.getPageSize() * pageable.getPageNumber());
+
+            countQuery.setTimestamp(1, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(2, Timestamp.valueOf(checkOut));
+            countQuery.setTimestamp(3, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(4, Timestamp.valueOf(checkOut));
+            countQuery.setTimestamp(5, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(6, Timestamp.valueOf(checkOut));
+
+            count = 7;
+            for (int i = 0; i < types.size(); i++, count++) {
+                countQuery.setString(count, types.get(i).toString());
+            }
 
             ResultSet rs = ps.executeQuery();
             ResultSet totalElementsResultSet = countQuery.executeQuery();

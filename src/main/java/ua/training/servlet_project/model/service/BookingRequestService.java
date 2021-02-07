@@ -12,10 +12,12 @@ import ua.training.servlet_project.model.entity.*;
 import ua.training.servlet_project.model.exceptions.EmptyBookingRequestException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BookingRequestService {
     private static final Logger LOGGER = LogManager.getLogger(BookingRequestService.class);
+    private static final String BOOKING_REQUEST_NOT_FOUND_EXCEPTION_MESSAGE = "Booking request not found by id: ";
     private final DaoFactory daoFactory;
 
     public BookingRequestService() {
@@ -73,5 +75,18 @@ public class BookingRequestService {
         try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
             bookingRequestDao.save(bookingRequestCreationDTO);
         }
+    }
+
+    public Optional<BookingRequestDTO> getBookingRequestById(Long id) {
+        Optional<BookingRequest> requestOptional;
+        try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
+            requestOptional = bookingRequestDao.findById(id);
+        }
+        BookingRequest request = requestOptional
+                .orElse(null);
+        if (request == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(getBookingRequestDTO(request));
     }
 }

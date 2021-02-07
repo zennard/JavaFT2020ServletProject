@@ -148,6 +148,7 @@ public class RequestParamsParser {
 
     public static List<Long> parseListOfLong(String[] values, RuntimeException ex) {
         try {
+            LOGGER.info(values);
             List<Long> resultList = new ArrayList<>();
             for (String paramValue : values) {
                 resultList.add(parseLong(paramValue, ex));

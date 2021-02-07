@@ -32,7 +32,7 @@
             <fmt:message var="deluxe" key="roomtype.deluxe"/>
             <fmt:message var="president" key="roomtype.president"/>
             <main class="container-md">
-                <form name="requestForm" method="POST" action="/app/booking-requests">
+                <form name="requestForm" method="POST" action="/app/booking-requests" onsubmit="return false;">
                     <input type="hidden" name="type" value="${standard}" data-type="STANDARD">
                     <input type="hidden" name="type" value="${suite}" data-type="SUITE">
                     <input type="hidden" name="type" value="${deluxe}" data-type="DELUXE">
@@ -42,19 +42,21 @@
                            min="${date.prevYear} += '-01-01'" max="${date.nextYear} += '-12-31'"
                            data-date="${date.checkIn}"
                            data-date-format="${sessionScope.lang == 'ua' ?'DD-MM-YYYY':'MM-DD-YYYY'}"
-                           value="${date.checkIn}"
-                    />
+                           value="${date.checkIn}" required/>
                     <br/>
                     <label for="checkOut"><fmt:message key="datepicker.check.out"/></label>
                     <input class="date-input" type="date" id="checkOut" name="endsAt"
                            min="${date.prevYear} += '-01-01'" max="${date.nextYear} += '-12-31'"
                            data-date="${date.checkOut}"
                            data-date-format="${sessionScope.lang == 'ua' ?'DD-MM-YYYY':'MM-DD-YYYY'}"
-                           value="${date.checkOut}"/>
+                           value="${date.checkOut}" required/>
                     <br/>
-                    <input type="submit" value="submit"/>
+                    <fmt:message var="submitBtnLabel" key="booking.request.creation.btn.submit"/>
+                    <input id="submitBtn" type="submit" value="${submitBtnLabel}"/>
                 </form>
                 <button onclick="addInputRow();"></button>
+                <div class="error" id="error-panel">
+                </div>
             </main>
         </div>
 

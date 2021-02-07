@@ -10,12 +10,17 @@ import ua.training.servlet_project.model.exceptions.BookingRequestCreationExcept
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static ua.training.servlet_project.model.util.RequestParamsParser.*;
 
 public class RequestConverter {
     private static final String CREATION_EXCEPTION_NOT_ENOUGH_PARAMETERS = "Not enough parameters for creation of request!";
+    public static final String CREATION_EXCEPTION_TOO_MANY_PARAMETERS = "Too many parameters for creation of request!";
+    private static final String CREATION_EXCEPTION_TYPE_DUPLICATES = "Using the same room type in booking request" +
+            " more than once is not allowed!";
+    private static final int ROOM_TYPES_COUNT = RoomType.values().length;
 
     private RequestConverter() {
 
@@ -40,6 +45,12 @@ public class RequestConverter {
 
         if (bedsCountInputList.size() != typesList.size()) {
             throw new BookingRequestCreationException(CREATION_EXCEPTION_NOT_ENOUGH_PARAMETERS);
+        }
+        if (typesList.size() > ROOM_TYPES_COUNT) {
+            throw new BookingRequestCreationException(CREATION_EXCEPTION_TOO_MANY_PARAMETERS);
+        }
+        if (typesList.size() != new HashSet<>(typesList).size()) {
+            throw new BookingRequestCreationException(CREATION_EXCEPTION_TYPE_DUPLICATES);
         }
 
         return BookingRequestCreationDTO.builder()

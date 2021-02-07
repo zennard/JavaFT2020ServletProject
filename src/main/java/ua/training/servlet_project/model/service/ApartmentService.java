@@ -2,6 +2,7 @@ package ua.training.servlet_project.model.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.training.servlet_project.controller.dto.ApartmentCriteriaDTO;
 import ua.training.servlet_project.controller.dto.OrderItemDTO;
 import ua.training.servlet_project.controller.dto.VacationDateDTO;
 import ua.training.servlet_project.model.dao.ApartmentDao;
@@ -52,20 +53,7 @@ public class ApartmentService {
         }
 
         for (Apartment a : apartmentsPage.getContent()) {
-            LOGGER.info("{}", a);
-            LOGGER.info("{}", a.getSchedule());
-            LOGGER.info("\n---\n");
-
-            List<ApartmentTimetable> schedule = a.getSchedule();
-            if (schedule.isEmpty()) {
-                schedule.add(
-                        ApartmentTimetable.builder()
-                                .status(RoomStatus.FREE)
-                                .startsAt(checkIn)
-                                .endsAt(checkOut)
-                                .build()
-                );
-            }
+            updateEmptySchedule(a, checkIn, checkOut);
         }
 
         return apartmentsPage;
@@ -128,5 +116,44 @@ public class ApartmentService {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    public Page<Apartment> getAllAvailableApartmentsByDate(Pageable pageable, VacationDateDTO vacationDateDTO,
+                                                           ApartmentCriteriaDTO apartmentCriteriaDTO) {
+        LocalDate startsAt = vacationDateDTO.getStartsAt();
+        LocalDate endsAt = vacationDateDTO.getEndsAt();
+
+        if (endsAt.isBefore(startsAt)) throw new IllegalDateException("Check out time cannot go before check-in!");
+
+        LocalDateTime checkIn = LocalDateTime.of(startsAt, LocalTime.of(checkInHours, SETTLEMENT_MINUTES));
+        LocalDateTime checkOut = LocalDateTime.of(endsAt, LocalTime.of(checkOutHours, SETTLEMENT_MINUTES));
+
+        Page<Apartment> apartmentsPage;
+        try (ApartmentDao apartmentDao = daoFactory.createApartmentDao()) {
+            apartmentsPage = apartmentDao.findAllFreeAvailableByDate(checkIn, checkOut, pageable, apartmentCriteriaDTO);
+        }
+
+        for (Apartment a : apartmentsPage.getContent()) {
+            updateEmptySchedule(a, checkIn, checkOut);
+        }
+
+        return apartmentsPage;
+    }
+
+    private void updateEmptySchedule(Apartment a, LocalDateTime checkIn, LocalDateTime checkOut) {
+        LOGGER.info("{}", a);
+        LOGGER.info("{}", a.getSchedule());
+        LOGGER.info("\n---\n");
+
+        List<ApartmentTimetable> schedule = a.getSchedule();
+        if (schedule.isEmpty()) {
+            schedule.add(
+                    ApartmentTimetable.builder()
+                            .status(RoomStatus.FREE)
+                            .startsAt(checkIn)
+                            .endsAt(checkOut)
+                            .build()
+            );
+        }
     }
 }

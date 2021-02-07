@@ -58,8 +58,8 @@
                         </c:if>
                         <c:if test="${user.getRole().toString() == 'ROLE_USER'}">
                             <li class="nav-item">
-                                <a class="${param.module == 'booking_requests_creation' ? 'nav-link active' : 'nav-link'}"
-                                   href="/app/booking-requests/creation">
+                                <a class="${param.module == 'booking_request_creation' ? 'nav-link active' : 'nav-link'}"
+                                   href="/app/booking-requests/create">
                                     <fmt:message key="navigation.section.booking.requests.creation"/>
                                 </a>
                             </li>

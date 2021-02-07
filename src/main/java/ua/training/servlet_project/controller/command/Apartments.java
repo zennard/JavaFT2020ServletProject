@@ -32,12 +32,11 @@ public class Apartments implements Command {
         Pageable pageable = parsePageableFromRequest(request);
 
         Page<Apartment> apartmentPage = apartmentService.getAllAvailableApartmentsByDate(pageable, vacationDateDTO);
-        Pageable currentPageable = apartmentPage.getPageable();
 
         request.setAttribute("pageContextVar",
                 ApartmentPageContextDTO.builder()
                         .apartments(apartmentPage.getContent())
-                        .page(getPageDTO(apartmentPage, currentPageable))
+                        .page(getPageDTO(apartmentPage, "/app/apartments"))
                         .date(getDateDTO(vacationDateDTO))
                         .build()
         );
@@ -54,7 +53,8 @@ public class Apartments implements Command {
                 .build();
     }
 
-    private PageDTO getPageDTO(Page<Apartment> apartmentPage, Pageable currentPageable) {
+    public static PageDTO getPageDTO(Page<Apartment> apartmentPage, String pageUrl) {
+        Pageable currentPageable = apartmentPage.getPageable();
         return PageDTO.builder()
                 .limit(currentPageable.getPageSize())
                 .prevPage(currentPageable.getPageNumber() - 1)
@@ -63,7 +63,7 @@ public class Apartments implements Command {
                 .totalPages(apartmentPage.getTotalPages())
                 .hasPrev(apartmentPage.hasPrevious())
                 .hasNext(apartmentPage.hasNext())
-                .url("/app/apartments")
+                .url(pageUrl)
                 .build();
     }
 }

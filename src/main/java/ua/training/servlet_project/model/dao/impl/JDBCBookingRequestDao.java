@@ -42,7 +42,21 @@ public class JDBCBookingRequestDao implements BookingRequestDao {
 
     @Override
     public Optional<BookingRequest> findById(Long id) {
-        return null;
+        Optional<BookingRequest> result = Optional.empty();
+
+        try (PreparedStatement ps = connection.prepareCall("SELECT * FROM booking_request WHERE id = ?")) {
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            BookingRequestMapper mapper = new BookingRequestMapper();
+            if (rs.next()) {
+                result = Optional.of(mapper.extractFromResultSet(rs));
+            }
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        return result;
     }
 
     @Override
