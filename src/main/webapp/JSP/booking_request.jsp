@@ -155,10 +155,20 @@
                 <jsp:include page="/JSP/fragments/pager.jsp"/>
             </div>
 
-            <form method="POST" action="${'/app/orders?startsAt=' += bookingRequest.getStartsAt() +=
-             '&endsAt=' += bookingRequest.getEndsAt()}" name="submitForm">
-                <input type="button" class="btn btn-success" onclick="onSubmit()"/>
-            </form>
+            <fmt:message key="booking.request.btn.submit" var="submitBtnLabel"/>
+            <fmt:message key="booking.request.btn.cancel" var="cancelBtnLabel"/>
+            <div class="container-sm d-flex justify-content-center">
+                <form method="POST" action="${'/app/booking-requests/update/' += bookingRequest.getId() += '?startsAt=' += bookingRequest.getStartsAt() +=
+             '&endsAt=' += bookingRequest.getEndsAt() += "&bookingStatus=CLOSED" += "&userId=" += bookingRequest.getUserId()}"
+                      name="submitForm">
+                    <input type="button" class="btn btn-success" onclick="onSubmit()" value="${submitBtnLabel}"/>
+                </form>
+                <form method="POST"
+                      action="${'/app/booking-requests/update/' += bookingRequest.getId() += '?bookingStatus=CANCELED'
+                       += "&userId=" += bookingRequest.getUserId()}">
+                    <input type="submit" class="btn btn-danger" value="${cancelBtnLabel}"/>
+                </form>
+            </div>
         </div>
 
         <script src="<c:url value="/js/jquery-3.5.1.min.js"/>">

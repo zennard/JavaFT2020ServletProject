@@ -87,7 +87,7 @@ function validate(bedsCountInputElems, selectTypeElems) {
         errorPanel.appendChild(errorNode);
         return false;
     }
-    return form.validate();
+    return form.checkValidity();
 
 }
 
@@ -103,7 +103,7 @@ function clearErrorPanel() {
 
 function createFormGroupDiv() {
     const formGroup = document.createElement("div");
-    formGroup.className = "form-group col-sm-6";
+    formGroup.className = "form-group col-sm-2";
     return formGroup;
 }
 

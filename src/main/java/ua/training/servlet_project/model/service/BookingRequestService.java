@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.BookingRequestCreationDTO;
 import ua.training.servlet_project.controller.dto.BookingRequestDTO;
 import ua.training.servlet_project.controller.dto.BookingRequestItemDTO;
+import ua.training.servlet_project.controller.dto.BookingRequestUpdateDTO;
 import ua.training.servlet_project.model.dao.BookingRequestDao;
 import ua.training.servlet_project.model.dao.BookingRequestItemDao;
 import ua.training.servlet_project.model.dao.DaoFactory;
@@ -74,6 +75,13 @@ public class BookingRequestService {
         LOGGER.info(bookingRequestCreationDTO);
         try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
             bookingRequestDao.save(bookingRequestCreationDTO);
+        }
+    }
+
+    public void updateRequestStatus(BookingRequestUpdateDTO bookingRequestUpdateDTO) {
+        LOGGER.info(bookingRequestUpdateDTO);
+        try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
+            bookingRequestDao.updateStatus(bookingRequestUpdateDTO);
         }
     }
 

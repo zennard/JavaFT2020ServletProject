@@ -82,7 +82,8 @@
                                 <div>
                                     <form class="reservation-form" method="POST"
                                           action="${'/app/orders?apartmentId=' += apartment.getId()
-                                          += '&startsAt=' += userStartsAt += '&endsAt=' += userEndsAt}">
+                                          += '&startsAt=' += userStartsAt += '&endsAt=' += userEndsAt
+                                          += "&userId=" += user.getId()}">
                                         <c:forEach var="id" items="${apartmentIds}">
                                             <input type="hidden" name="apartmentIds" value="${id}"/>
                                         </c:forEach>

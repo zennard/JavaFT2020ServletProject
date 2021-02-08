@@ -3,10 +3,7 @@ package ua.training.servlet_project.model.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.VacationDateDTO;
-import ua.training.servlet_project.model.entity.OrderStatus;
-import ua.training.servlet_project.model.entity.Pageable;
-import ua.training.servlet_project.model.entity.RoomType;
-import ua.training.servlet_project.model.entity.SortType;
+import ua.training.servlet_project.model.entity.*;
 import ua.training.servlet_project.model.exceptions.OrderStatusParseException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -181,6 +178,16 @@ public class RequestParamsParser {
             }
             return resultList;
         } catch (RuntimeException rex) {
+            LOGGER.error(ex);
+            throw ex;
+        }
+    }
+
+    public static RequestStatus parseBookingRequestStatus(String statusValue, RuntimeException ex) {
+        try {
+            return RequestStatus.valueOf(statusValue.toUpperCase());
+        } catch (NullPointerException | IllegalArgumentException iex) {
+            LOGGER.error("booking request status parse exception: ", iex);
             LOGGER.error(ex);
             throw ex;
         }

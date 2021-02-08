@@ -2,16 +2,14 @@ package ua.training.servlet_project.controller.command;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ua.training.servlet_project.controller.dto.OrderCreationDTO;
-import ua.training.servlet_project.controller.dto.OrderDTO;
-import ua.training.servlet_project.controller.dto.OrderItemDTO;
-import ua.training.servlet_project.controller.dto.PageDTO;
+import ua.training.servlet_project.controller.dto.*;
 import ua.training.servlet_project.model.entity.Page;
 import ua.training.servlet_project.model.entity.Pageable;
-import ua.training.servlet_project.model.entity.User;
 import ua.training.servlet_project.model.exceptions.ApartmentNotFoundException;
+import ua.training.servlet_project.model.exceptions.UserNotFoundException;
 import ua.training.servlet_project.model.service.ApartmentService;
 import ua.training.servlet_project.model.service.OrderService;
+import ua.training.servlet_project.model.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -23,13 +21,16 @@ public class Orders implements Command {
     private static final Logger LOGGER = LogManager.getLogger(Orders.class);
     private static final String ORDERS_PAGE_REDIRECT = "/JSP/orders.jsp";
     private static final String APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE = "Cannot find apartment by given id";
+    private static final String USER_NOT_FOUND_EXCEPTION_MESSAGE = "Cannot find user by id!";
     private static final int DEFAULT_DAYS_OFFSET = 3;
     private final OrderService orderService;
     private final ApartmentService apartmentService;
+    private final UserService userService;
 
     public Orders() {
         orderService = new OrderService();
         apartmentService = new ApartmentService();
+        userService = new UserService();
     }
 
     @Override
@@ -62,18 +63,18 @@ public class Orders implements Command {
     }
 
     private String processPostRequest(HttpServletRequest request) {
-        LocalDateTime startsAt = parseLocalDateTime(request.getParameter("startsAt"),
-                LocalDateTime.now().minusDays(DEFAULT_DAYS_OFFSET));
-        LocalDateTime endsAt = parseLocalDateTime(request.getParameter("endsAt"),
-                LocalDateTime.now().plusDays(DEFAULT_DAYS_OFFSET));
         List<Long> apartmentIds = parseListOfLong(request.getParameterValues("apartmentIds"),
                 new ApartmentNotFoundException(APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE));
-        User user = (User) request.getSession().getAttribute("user");
-
         LOGGER.info("apartment ids:{}", apartmentIds);
         List<OrderItemDTO> items = apartmentService.getAllApartmentsByIds(apartmentIds);
         LOGGER.info("items: {}", items);
 
+        UserProfileDTO user = userService.getUserById(parseLong(request.getParameter("userId"),
+                new UserNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE)));
+        LocalDateTime startsAt = parseLocalDateTime(request.getParameter("startsAt"),
+                LocalDateTime.now().minusDays(DEFAULT_DAYS_OFFSET));
+        LocalDateTime endsAt = parseLocalDateTime(request.getParameter("endsAt"),
+                LocalDateTime.now().plusDays(DEFAULT_DAYS_OFFSET));
         OrderCreationDTO orderDTO = OrderCreationDTO
                 .builder()
                 .userEmail(user.getEmail())
@@ -84,7 +85,6 @@ public class Orders implements Command {
                 .build();
 
         LOGGER.info("{}", orderDTO);
-
         orderService.createNewOrder(orderDTO);
 
         return String.format("redirect:/app/apartments?startsAt=%s&endsAt=%s",

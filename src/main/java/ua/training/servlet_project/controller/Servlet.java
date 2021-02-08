@@ -22,6 +22,9 @@ public class Servlet extends HttpServlet {
 
     @Override
     public void init() {
+        //@TODO init with services(dependency injection)
+        Orders ordersCommand = new Orders();
+        UpdateBookingRequest requestUpdateCommand = new UpdateBookingRequest();
         commands.put("", new Landing());
         commands.put("logout", new LogOut());
         commands.put("login", new Login());
@@ -29,13 +32,14 @@ public class Servlet extends HttpServlet {
         commands.put("exception", new Exception());
         commands.put("apartments", new Apartments());
         commands.put("apartments/\\d+", new ApartmentProfile());
-        commands.put("orders", new Orders());
+        commands.put("orders", ordersCommand);
         commands.put("orders/update/\\d+", new UpdateOrder());
         commands.put("users", new Users());
         commands.put("users/\\d+", new UserProfile());
         commands.put("booking-requests/create", new BookingRequestCreation());
         commands.put("booking-requests", new BookingRequests());
         commands.put("booking-requests/\\d+", new BookingRequestProfile());
+        commands.put("booking-requests/update/\\d+", new RequestsToOrdersFacade(ordersCommand, requestUpdateCommand));
     }
 
     @Override

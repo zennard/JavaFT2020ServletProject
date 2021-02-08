@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.training.servlet_project.controller.dto.BookingRequestCreationDTO;
 import ua.training.servlet_project.controller.dto.BookingRequestItemDTO;
+import ua.training.servlet_project.controller.dto.BookingRequestUpdateDTO;
 import ua.training.servlet_project.model.dao.BookingRequestDao;
 import ua.training.servlet_project.model.dao.mapper.BookingRequestMapper;
 import ua.training.servlet_project.model.entity.BookingRequest;
@@ -176,6 +177,21 @@ public class JDBCBookingRequestDao implements BookingRequestDao {
             }
         }
         return newBookingRequestId;
+    }
+
+    @Override
+    public void updateStatus(BookingRequestUpdateDTO bookingRequest) {
+        try (PreparedStatement ps = connection.prepareCall("UPDATE booking_request " +
+                " SET request_status = ? " +
+                "WHERE id = ? ")) {
+            ps.setString(1, bookingRequest.getStatus().toString());
+            ps.setLong(2, bookingRequest.getId());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            LOGGER.info(ex);
+            throw new EntityCreationException(ex);
+        }
+
     }
 
     @Override
