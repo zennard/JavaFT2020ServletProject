@@ -90,18 +90,29 @@
                                         <tags:localDateTime date="${o.getEndsAt()}" pattern="${format}"/>
                                     </span>
                                 </td>
-                                <c:forEach var="item" items="${o.getOrderItems()}">
-                                    <td>
-                                        <span>
-                                                ${item.apartmentId}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span>
-                                                ${item.price}
-                                        </span>
-                                    </td>
-                                </c:forEach>
+                                <c:set var="items" value="${o.getOrderItems()}"/>
+                                <c:set var="itemsSize" value="${items.size()}"/>
+                                <td>
+                                    <c:set var="counter" value="1"/>
+                                    <span>
+                                        <c:forEach var="item" items="${items}">
+                                            ${item.apartmentId}
+                                            <c:if test="${counter != itemsSize}">
+                                                ,
+                                            </c:if>
+                                            <c:set var="counter" value="${counter + 1}"/>
+                                        </c:forEach>
+                                    </span>
+                                </td>
+                                <td>
+                                    <c:set var="totalOrderPrice" value="0"/>
+                                    <c:forEach var="item" items="${o.getOrderItems()}">
+                                        <c:set var="totalOrderPrice" value="${totalOrderPrice + item.price}"/>
+                                    </c:forEach>
+                                    <span>
+                                            ${totalOrderPrice}
+                                    </span>
+                                </td>
                                 <fmt:message var="approveBtnLabel" key="orders.buttons.approve"/>
                                 <td>
                                     <form method="POST"
