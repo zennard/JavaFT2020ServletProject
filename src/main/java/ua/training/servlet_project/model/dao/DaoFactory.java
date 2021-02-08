@@ -3,7 +3,7 @@ package ua.training.servlet_project.model.dao;
 import ua.training.servlet_project.model.dao.impl.JDBCDaoFactory;
 
 public abstract class DaoFactory {
-    private static DaoFactory daoFactory;
+    private static volatile DaoFactory daoFactory;
 
     public abstract ApartmentDao createApartmentDao();
 

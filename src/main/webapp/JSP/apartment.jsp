@@ -26,7 +26,7 @@
         </jsp:include>
 
         <main class="container d-flex align-items-center">
-            <div class="row justify-content-around align-self-center">
+            <div class="row justify-content-around align-self-center scrollbar">
                 <article class="col-5 text-left align-self-center">
                     ${apartment.getDescription()}
                 </article>

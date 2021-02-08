@@ -11,19 +11,21 @@ public class LogOut implements Command {
 
     @Override
     public String execute(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        removeUserFromContext(request, user.getEmail());
-        session.removeAttribute("user");
+        removeUserFromContext(request);
 
         return REDIRECT_LOGIN_PAGE;
     }
 
-    private static void removeUserFromContext(HttpServletRequest request, String email) {
-        Set<String> loggedUsers = (Set<String>) request.getSession().getServletContext()
+    private static void removeUserFromContext(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        String email = user.getEmail();
+
+        Set<String> loggedUsers = (Set<String>) session.getServletContext()
                 .getAttribute("loggedUsers");
         loggedUsers.remove(email);
-        request.getSession().getServletContext()
+        session.getServletContext()
                 .setAttribute("loggedUsers", loggedUsers);
+        session.removeAttribute("user");
     }
 }

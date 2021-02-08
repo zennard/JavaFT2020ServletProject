@@ -21,7 +21,7 @@ import static ua.training.servlet_project.model.util.RequestParamsParser.parsePa
 
 public class UserProfile implements Command {
     private static final Logger LOGGER = LogManager.getLogger(UserProfile.class);
-    public static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/users/(\\d+).*(?!a-zA-Z|/)$");
+    private static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/users/(\\d+).*(?!a-zA-Z|/)$");
     private static final String USER_PROFILE_PAGE = "/JSP/user.jsp";
     private static final String FORBIDDEN_PAGE_EXCEPTION_MESSAGE = "Cannot access this page";
     private static final String USER_NOT_FOUND_BY_ID_EXCEPTION_MESSAGE = "Cannot find user by id: ";

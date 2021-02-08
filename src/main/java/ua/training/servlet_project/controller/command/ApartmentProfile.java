@@ -22,7 +22,7 @@ import static ua.training.servlet_project.model.util.RequestParamsParser.parseVa
 
 public class ApartmentProfile implements Command {
     private static final Logger LOGGER = LogManager.getLogger(ApartmentProfile.class);
-    public static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/apartments/(\\d+).*(?!a-zA-Z|/)$");
+    private static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/apartments/(\\d+).*(?!a-zA-Z|/)$");
     private static final String APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE = "Apartment not found by id";
     private static final String APARTMENT_PAGE = "/JSP/apartment.jsp";
     private static final int SETTLEMENT_MINUTES = 0;
@@ -43,7 +43,6 @@ public class ApartmentProfile implements Command {
         Long id = parseLong(ID_PATH_VARIABLE_PATTERN.matcher(path).replaceAll("$1"),
                 new ApartmentNotFoundException(APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE));
         LOGGER.info(id);
-        Long timeSlotId = parseLong(request.getParameter("slotId"), -1L);
         //@TODO REMOVE BAD CODE, QUICK FIX
         String lang = (String) request.getSession().getAttribute("lang");
         if (lang == null) {
@@ -58,6 +57,8 @@ public class ApartmentProfile implements Command {
         LOGGER.info("{}", apartment);
         LOGGER.info("{}", apartment.getSchedule());
 
+        //@TODO remove optional on if else
+        Long timeSlotId = parseLong(request.getParameter("slotId"), -1L);
         ApartmentTimetable schedule = Optional.ofNullable(timeSlotId)
                 .flatMap(tId -> apartment
                         .getSchedule()

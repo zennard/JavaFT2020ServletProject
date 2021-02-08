@@ -78,12 +78,12 @@ public class BookingRequestService {
     }
 
     public Optional<BookingRequestDTO> getBookingRequestById(Long id) {
-        Optional<BookingRequest> requestOptional;
+        BookingRequest request;
         try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
-            requestOptional = bookingRequestDao.findById(id);
+            request = bookingRequestDao.findById(id)
+                    .orElse(null);
         }
-        BookingRequest request = requestOptional
-                .orElse(null);
+
         if (request == null) {
             return Optional.empty();
         }

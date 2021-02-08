@@ -21,7 +21,7 @@ import static ua.training.servlet_project.model.util.RequestParamsParser.*;
 
 public class Orders implements Command {
     private static final Logger LOGGER = LogManager.getLogger(Orders.class);
-    public static final String ORDERS_PAGE_REDIRECT = "/JSP/orders.jsp";
+    private static final String ORDERS_PAGE_REDIRECT = "/JSP/orders.jsp";
     private static final String APARTMENT_NOT_FOUND_EXCEPTION_MESSAGE = "Cannot find apartment by given id";
     private static final int DEFAULT_DAYS_OFFSET = 3;
     private final OrderService orderService;

@@ -23,7 +23,7 @@ import static ua.training.servlet_project.model.util.RequestParamsParser.parsePa
 
 public class BookingRequestProfile implements Command {
     private static final Logger LOGGER = LogManager.getLogger(BookingRequestProfile.class);
-    public static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/booking-requests/(\\d+).*(?!a-zA-Z|/)$");
+    private static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/booking-requests/(\\d+).*(?!a-zA-Z|/)$");
     private static final String BOOKING_REQUEST_NOT_FOUND_EXCEPTION_MESSAGE = "Booking request not found by id";
     private static final String BOOKING_REQUEST_PAGE = "/JSP/booking_request.jsp";
     private final BookingRequestService bookingRequestService;

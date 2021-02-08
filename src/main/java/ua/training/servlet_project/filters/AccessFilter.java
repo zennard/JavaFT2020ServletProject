@@ -70,7 +70,8 @@ public class AccessFilter implements Filter {
     }
 
     private boolean isAccessAllowed(String path, RoleType role, HttpMethodType method) {
-        return accessControlList.entrySet().stream()
+        return isResourcesPath(path)
+                || accessControlList.entrySet().stream()
                 .anyMatch(entry ->
                         Pattern.compile(entry.getKey()).matcher(path).matches()
                                 && entry.getValue().contains
@@ -80,8 +81,7 @@ public class AccessFilter implements Filter {
                                                 .method(method)
                                                 .build()
                                 )
-                )
-                || isResourcesPath(path);
+                );
     }
 
     @Override

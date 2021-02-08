@@ -17,21 +17,25 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
               integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
               crossorigin="anonymous">
+        <link rel="stylesheet" href="<c:url value = "/css/index.css"/>" crossorigin="anonymous">
     </head>
     <body>
         <jsp:include page="/JSP/fragments/header.jsp">
             <jsp:param name="module" value="home"/>
         </jsp:include>
-        <h2>
-            Hello World!
-        </h2>
 
-        <br/>
-        <a href="${pageContext.request.contextPath}/app/login">Login</a>
-        <br/>
-        <a href="${pageContext.request.contextPath}/app/registration">Registration form</a>
-        <br>
-        <a href="${pageContext.request.contextPath}/app/exception">Exception</a>
+        <main class="bg-image">
+            <div class="welcome-block">
+                <h2 class="welcome-text">
+                    <fmt:message key="greeting"/>
+                </h2>
+                <div class="d-grid login-btn col-12">
+                    <button class="btn btn-primary btn-lg" onclick="location.href = '/login';">
+                        <fmt:message key="button.login"/>
+                    </button>
+                </div>
+            </div>
+        </main>
 
         <script src="<c:url value = "/js/jquery-3.5.1.min.js"/>"
                 crossorigin="anonymous">

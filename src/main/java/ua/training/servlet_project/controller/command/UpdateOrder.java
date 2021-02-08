@@ -12,7 +12,6 @@ import ua.training.servlet_project.model.service.OrderService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static ua.training.servlet_project.model.util.RequestParamsParser.parseLong;
@@ -20,7 +19,7 @@ import static ua.training.servlet_project.model.util.RequestParamsParser.parseOr
 
 public class UpdateOrder implements Command {
     private static final Logger LOGGER = LogManager.getLogger(UpdateOrder.class);
-    public static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/orders/update/(\\d+).*(?!a-zA-Z|/)$");
+    private static final Pattern ID_PATH_VARIABLE_PATTERN = Pattern.compile("^/app/orders/update/(\\d+).*(?!a-zA-Z|/)$");
     private static final String ORDER_NOT_FOUND_EXCEPTION_MESSAGE = "Order not found by id";
     private static final String FORBIDDEN_PAGE_EXCEPTION_MESSAGE = "Cannot access this page";
     private static final String APARTMENTS_PAGE_REDIRECT = "redirect:/apartments";
@@ -33,20 +32,16 @@ public class UpdateOrder implements Command {
     @Override
     public String execute(HttpServletRequest request) {
         String path = request.getRequestURI();
-        HttpSession session = request.getSession(true);
+        HttpSession session = request.getSession();
 
         User curUser = (User) session.getAttribute("user");
+        OrderStatus newStatus = parseOrderStatus(request.getParameter("orderStatus"));
+        if (isNotAuthorized(curUser, newStatus)) {
+            throw new ForbiddenPageException(FORBIDDEN_PAGE_EXCEPTION_MESSAGE);
+        }
+
         Long id = parseLong(ID_PATH_VARIABLE_PATTERN.matcher(path).replaceAll("$1"),
                 new OrderNotFoundException(ORDER_NOT_FOUND_EXCEPTION_MESSAGE));
-        OrderStatus newStatus = parseOrderStatus(request.getParameter("orderStatus"));
-
-        Optional.ofNullable(curUser)
-                .ifPresent(user -> {
-                    if (newStatus.equals(OrderStatus.APPROVED) && !user.getRole().equals(RoleType.ROLE_MANAGER)) {
-                        throw new ForbiddenPageException(FORBIDDEN_PAGE_EXCEPTION_MESSAGE);
-                    }
-                });
-
         orderService.updateOrderStatus(
                 UpdateOrderDTO.builder()
                         .id(id)
@@ -54,5 +49,10 @@ public class UpdateOrder implements Command {
                         .build()
         );
         return APARTMENTS_PAGE_REDIRECT;
+    }
+
+    private boolean isNotAuthorized(User user, OrderStatus status) {
+        return user != null && status.equals(OrderStatus.APPROVED)
+                && !user.getRole().equals(RoleType.ROLE_MANAGER);
     }
 }

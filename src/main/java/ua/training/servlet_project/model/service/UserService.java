@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+
 public class UserService {
     private static final Logger LOGGER = LogManager.getLogger(UserService.class);
     private static final String USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE = "Cannot find user by email";
@@ -100,14 +102,14 @@ public class UserService {
     }
 
     public void saveNewUser(UserRegistrationDTO userRegDTO) {
+        User user = User.builder()
+                .firstName(userRegDTO.getFirstName())
+                .lastName(userRegDTO.getLastName())
+                .email(userRegDTO.getEmail())
+                .password(getPasswordHash(userRegDTO.getPassword()))
+                .role(RoleType.ROLE_USER)
+                .build();
         try (UserDao userDao = daoFactory.createUserDao()) {
-            User user = User.builder()
-                    .firstName(userRegDTO.getFirstName())
-                    .lastName(userRegDTO.getLastName())
-                    .email(userRegDTO.getEmail())
-                    .password(getPasswordHash(userRegDTO.getPassword()))
-                    .role(RoleType.ROLE_USER)
-                    .build();
             userDao.create(user);
         } catch (Exception ex) {
             LOGGER.error("{This Email already exists}");
@@ -127,14 +129,6 @@ public class UserService {
     }
 
     private static String bytesToHex(byte[] hash) {
-        StringBuilder hexString = new StringBuilder(2 * hash.length);
-        for (int i = 0; i < hash.length; i++) {
-            String hex = Integer.toHexString(0xff & hash[i]);
-            if (hex.length() == 1) {
-                hexString.append('0');
-            }
-            hexString.append(hex);
-        }
-        return hexString.toString();
+        return printHexBinary(hash);
     }
 }

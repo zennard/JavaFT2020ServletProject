@@ -24,28 +24,42 @@ public class Validator {
         String email = userDto.getEmail();
         String password = userDto.getPassword();
 
-        boolean isFirstNameValid = firstName != null && firstName.length() >= MINIMAL_FIRST_NAME_SIZE
-                && firstName.length() <= MAXIMUM_FIRST_NAME_SIZE;
-        boolean isLastNameValid = lastName != null && lastName.length() >= MINIMAL_LAST_NAME_SIZE
-                && lastName.length() <= MAXIMUM_LAST_NAME_SIZE;
-        boolean isPasswordValid = password != null && password.length() >= MINIMAL_PASSWORD_SIZE
-                && password.length() <= MAXIMUM_PASSWORD_SIZE;
-        boolean isEmailValid = email != null && emailPattern.matcher(email).matches();
+        //@TODO change on method calls
 
-        if (!isFirstNameValid) {
+        if (isFirstNameNotValid(firstName)) {
             validationResult.addErrorValue("firstNameError");
         }
-        if (!isLastNameValid) {
+        if (!isLastNameNotValid(lastName)) {
             validationResult.addErrorValue("lastNameError");
         }
-        if (!isEmailValid) {
+        if (!isEmailNotValid(email)) {
             validationResult.addErrorValue("emailError");
         }
-        if (!isPasswordValid) {
+        if (!isPasswordNotValid(password)) {
             validationResult.addErrorValue("passwordError");
         }
 
         return validationResult;
     }
+
+    private static boolean isEmailNotValid(String email) {
+        return email == null || !emailPattern.matcher(email).matches();
+    }
+
+    private static boolean isPasswordNotValid(String password) {
+        return password == null || password.length() < MINIMAL_PASSWORD_SIZE
+                || password.length() > MAXIMUM_PASSWORD_SIZE;
+    }
+
+    private static boolean isLastNameNotValid(String lastName) {
+        return lastName == null || lastName.length() < MINIMAL_LAST_NAME_SIZE
+                || lastName.length() > MAXIMUM_LAST_NAME_SIZE;
+    }
+
+    private static boolean isFirstNameNotValid(String firstName) {
+        return firstName == null || firstName.length() < MINIMAL_FIRST_NAME_SIZE
+                || firstName.length() > MAXIMUM_FIRST_NAME_SIZE;
+    }
+
 
 }
