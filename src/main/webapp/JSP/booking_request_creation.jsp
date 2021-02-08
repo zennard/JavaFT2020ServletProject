@@ -54,7 +54,12 @@
                     <fmt:message var="submitBtnLabel" key="booking.request.creation.btn.submit"/>
                     <input id="submitBtn" type="submit" value="${submitBtnLabel}"/>
                 </form>
-                <button onclick="addInputRow();"></button>
+                <button class="btn" onclick="addInputRow();">
+                    <em class="far fa-plus-square fa-2x"></em>
+                </button>
+                <button class="btn" onclick="removeLastInputRow();">
+                    <em class="far fa-minus-square fa-2x"></em>
+                </button>
                 <div class="error" id="error-panel">
                 </div>
             </main>

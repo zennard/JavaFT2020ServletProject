@@ -1,4 +1,5 @@
 const form = document.requestForm;
+const submitBtn = document.getElementById("submitBtn");
 const types = document.getElementsByName("type");
 const errorPanel = document.getElementById("error-panel");
 let usedTypes = [];
@@ -7,7 +8,17 @@ document.getElementById("submitBtn").addEventListener("click", onSubmit);
 
 function addInputRow() {
     const inputForm = createInputForm();
-    form.appendChild(inputForm);
+    // form.insertAfter(inputForm, submitBtn);
+    form.insertBefore(inputForm, submitBtn);
+}
+
+function removeLastInputRow() {
+    const prev = $(submitBtn).prev().get();
+    console.log($(prev).attr("class"));
+    if ($(prev).attr("class") === "row") {
+        $(prev).remove();
+    }
+    // form.removeChild()
 }
 
 function createInputForm() {
