@@ -24,8 +24,12 @@
                 </li>
                 <li class="page-item active">
                     <a class="page-link" href="#">
+                        <c:set var="totalPages" value="${page.getTotalPages()}"/>
+                        <c:if test="${totalPages == 0}">
+                            <c:set var="totalPages" value="1"/>
+                        </c:if>
                         <span>
-                            ${page.getCurrentPage() += '/' += page.getTotalPages()}
+                            ${page.getCurrentPage() += '/' += totalPages}
                         </span>
                     </a>
                 </li>
