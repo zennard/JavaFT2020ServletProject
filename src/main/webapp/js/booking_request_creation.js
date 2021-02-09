@@ -6,8 +6,8 @@ let usedTypes = [];
 
 document.getElementById("submitBtn").addEventListener("click", onSubmit);
 
-function addInputRow() {
-    const inputForm = createInputForm();
+function addInputRow(bedsCountLabel, typeLabel) {
+    const inputForm = createInputForm(bedsCountLabel, typeLabel);
     // form.insertAfter(inputForm, submitBtn);
     form.insertBefore(inputForm, submitBtn);
 }
@@ -15,18 +15,21 @@ function addInputRow() {
 function removeLastInputRow() {
     const prev = $(submitBtn).prev().get();
     console.log($(prev).attr("class"));
-    if ($(prev).attr("class") === "row") {
+    if ($(prev).hasClass("row")) {
         $(prev).remove();
     }
-    // form.removeChild()
 }
 
-function createInputForm() {
+function createInputForm(bedsCountLabel, typeLabel) {
     const div = createDiv();
     const bedsCountFormGroup = createFormGroupDiv();
     const typeFormGroup = createFormGroupDiv();
+    const bedsCountLabelFormGroup = createFormGroupDiv();
+    const typeLabelFormGroup = createFormGroupDiv();
     const bedsCountInput = createBedsCountInput("1", "5");
     const typeSelect = createTypeSelect();
+    const labelForInput = createLabelForInput(bedsCountInput, bedsCountLabel);
+    const labelForSelect = createLabelForInput(typeSelect, typeLabel);
 
     types.forEach(type => {
         console.log("type:");
@@ -35,10 +38,14 @@ function createInputForm() {
         typeSelect.appendChild(option);
     })
 
+    bedsCountLabelFormGroup.appendChild(labelForInput);
     bedsCountFormGroup.appendChild(bedsCountInput);
+    typeLabelFormGroup.appendChild(labelForSelect);
     typeFormGroup.appendChild(typeSelect);
 
+    div.appendChild(bedsCountLabelFormGroup)
     div.appendChild(bedsCountFormGroup);
+    div.appendChild(typeLabelFormGroup)
     div.appendChild(typeFormGroup);
 
     console.log("div:");
@@ -91,8 +98,16 @@ function validate(bedsCountInputElems, selectTypeElems) {
 
 }
 
+function createLabelForInput(input, labelValue) {
+    const label = document.createElement("label");
+    label.textContent = labelValue;
+    label.setAttribute("for", input.getAttribute("name"));
+    return label;
+}
+
 function createErrorNode(text) {
     const paragraph = document.createElement("p");
+    paragraph.classList.add("alert", "alert-danger");
     paragraph.textContent = text;
     return paragraph;
 }
@@ -109,7 +124,7 @@ function createFormGroupDiv() {
 
 function createDiv() {
     const div = document.createElement("div");
-    div.className = "row"
+    div.className = "row input-row justify-content-center"
     return div;
 }
 

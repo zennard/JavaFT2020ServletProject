@@ -19,6 +19,8 @@
               integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
               crossorigin="anonymous">
         <link rel="stylesheet" href="<c:url value = "/css/datepicker.css"/>">
+        <link rel="stylesheet" href="<c:url value = "/css/booking_request_creation.css"/>">
+
     </head>
     <body>
         <jsp:include page="/JSP/fragments/header.jsp">
@@ -31,7 +33,7 @@
             <fmt:message var="suite" key="roomtype.suite"/>
             <fmt:message var="deluxe" key="roomtype.deluxe"/>
             <fmt:message var="president" key="roomtype.president"/>
-            <main class="container-md">
+            <main class="container-md pt-2">
                 <form name="requestForm" method="POST" action="/app/booking-requests" onsubmit="return false;">
                     <input type="hidden" name="type" value="${standard}" data-type="STANDARD">
                     <input type="hidden" name="type" value="${suite}" data-type="SUITE">
@@ -52,16 +54,17 @@
                            value="${date.checkOut}" required/>
                     <br/>
                     <fmt:message var="submitBtnLabel" key="booking.request.creation.btn.submit"/>
-                    <input id="submitBtn" type="submit" value="${submitBtnLabel}"/>
+                    <input id="submitBtn" class="btn btn-primary mt-2" type="submit" value="${submitBtnLabel}"/>
                 </form>
-                <button class="btn" onclick="addInputRow();">
+                <fmt:message var="bedsCountLabel" key="booking.request.label.beds.count"/>
+                <fmt:message var="typeLabel" key="booking.request.label.type"/>
+                <button class="btn" onclick="addInputRow('${bedsCountLabel}', '${typeLabel}');">
                     <em class="far fa-plus-square fa-2x"></em>
                 </button>
                 <button class="btn" onclick="removeLastInputRow();">
                     <em class="far fa-minus-square fa-2x"></em>
                 </button>
-                <div class="error" id="error-panel">
-                </div>
+                <div id="error-panel"></div>
             </main>
         </div>
 
