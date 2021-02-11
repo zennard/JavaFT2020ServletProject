@@ -121,6 +121,8 @@ public class JDBCOrderDao implements OrderDao {
 
     @Override
     public void updateOrderAndTimeslotStatus(Order order, List<ApartmentTimetable> schedule) {
+        String inSql = String.join(",", Collections.nCopies(schedule.size(), "?"));
+
         try {
             connection.setAutoCommit(false);
 
@@ -135,14 +137,15 @@ public class JDBCOrderDao implements OrderDao {
             }
 
             if (!schedule.isEmpty()) {
-                try (PreparedStatement ps = connection.prepareCall("UPDATE apartment_timetable " +
-                        "SET status = ? " +
-                        "WHERE id = ? ")) {
-
-                    for (ApartmentTimetable item : schedule) {
-                        ps.setString(1, item.getStatus().toString());
-                        ps.setLong(2, item.getId());
-                        ps.addBatch();
+                try (PreparedStatement ps = connection.prepareCall(String.format(
+                        "UPDATE apartment_timetable " +
+                                "SET status = ? " +
+                                "WHERE id IN (%s) ",
+                        inSql))
+                ) {
+                    ps.setString(1, schedule.get(0).getStatus().toString());
+                    for (int i = 1; i <= schedule.size(); i++) {
+                        ps.setLong(i + 1, schedule.get(i - 1).getId());
                     }
 
                     ps.executeUpdate();
