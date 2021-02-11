@@ -64,7 +64,28 @@
                 <button class="btn" onclick="removeLastInputRow();">
                     <em class="far fa-minus-square fa-2x"></em>
                 </button>
-                <div id="error-panel"></div>
+                <div id="error-panel">
+                    <div class="no-demands-error invisible">
+                        <p class="alert alert-danger">
+                            <fmt:message key="booking.request.creation.error.no.demands"/>
+                        </p>
+                    </div>
+                    <div class="fields-empty-error invisible">
+                        <p class="alert alert-danger">
+                            <fmt:message key="booking.request.creation.error.fields.empty"/>
+                        </p>
+                    </div>
+                    <div class="unnecessary-fields-error invisible">
+                        <p class="alert alert-danger">
+                            <fmt:message key="booking.request.creation.error.unnecessary.fields"/>
+                        </p>
+                    </div>
+                    <div class="duplicate-fields-error invisible">
+                        <p class="alert alert-danger">
+                            <fmt:message key="booking.request.creation.error.duplicate.fields"/>
+                        </p>
+                    </div>
+                </div>
             </main>
         </div>
 

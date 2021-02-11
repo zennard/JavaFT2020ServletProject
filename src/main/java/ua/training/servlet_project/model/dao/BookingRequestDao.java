@@ -13,4 +13,6 @@ public interface BookingRequestDao extends GenericDao<BookingRequest> {
     void updateStatus(BookingRequestUpdateDTO bookingRequestUpdateDTO);
 
     Page<BookingRequest> findAllByStatus(RequestStatus status, Pageable pageable);
+
+    Page<BookingRequest> findAllByUserId(Long userId, Pageable pageable);
 }

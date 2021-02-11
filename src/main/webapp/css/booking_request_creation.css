@@ -22,3 +22,7 @@ html, body {
 .input-row {
     margin: 5px 0;
 }
+
+.invisible {
+    display: none;
+}

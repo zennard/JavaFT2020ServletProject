@@ -29,13 +29,13 @@ public class Validator {
         if (isFirstNameNotValid(firstName)) {
             validationResult.addErrorValue("firstNameError");
         }
-        if (!isLastNameNotValid(lastName)) {
+        if (isLastNameNotValid(lastName)) {
             validationResult.addErrorValue("lastNameError");
         }
-        if (!isEmailNotValid(email)) {
+        if (isEmailNotValid(email)) {
             validationResult.addErrorValue("emailError");
         }
-        if (!isPasswordNotValid(password)) {
+        if (isPasswordNotValid(password)) {
             validationResult.addErrorValue("passwordError");
         }
 

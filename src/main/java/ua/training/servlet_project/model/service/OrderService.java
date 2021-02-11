@@ -120,7 +120,7 @@ public class OrderService {
                 ApartmentTimetable timeslot;
                 try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {
                     timeslot = apartmentTimetableDao
-                            .findById(item.getApartment().getId())
+                            .findById(item.getSchedule().getId())
                             .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_RECORD));
                 }
 

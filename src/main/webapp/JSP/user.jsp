@@ -89,46 +89,46 @@
                                     <c:forEach var="o" items="${orders}">
                                         <tr>
                                             <th scope="row">
-                                                    <span>
-                                                            ${o.id}
-                                                    </span>
+                                                <span>
+                                                        ${o.id}
+                                                </span>
                                             </th>
                                             <td>
-                                                    <span>
-                                                        <tags:localDateTime date="${o.getOrderDate()}"
-                                                                            pattern="${format}"/>
-                                                    </span>
+                                                <span>
+                                                    <tags:localDateTime date="${o.getOrderDate()}"
+                                                                        pattern="${format}"/>
+                                                </span>
                                             </td>
                                             <td>
-                                                    <span>
-                                                        <tags:localDateTime date="${o.getStartsAt()}"
-                                                                            pattern="${format}"/>
-                                                    </span>
+                                                <span>
+                                                    <tags:localDateTime date="${o.getStartsAt()}"
+                                                                        pattern="${format}"/>
+                                                </span>
                                             </td>
                                             <td>
-                                                    <span>
-                                                        <tags:localDateTime date="${o.getEndsAt()}"
-                                                                            pattern="${format}"/>
-                                                    </span>
+                                                <span>
+                                                    <tags:localDateTime date="${o.getEndsAt()}"
+                                                                        pattern="${format}"/>
+                                                </span>
                                             </td>
                                             <td>
-                                                    <span>
-                                                            ${f:getMessage(o.getStatus(), sessionScope.lang)}
-                                                    </span>
+                                                <span>
+                                                        ${f:getMessage(o.getStatus(), sessionScope.lang)}
+                                                </span>
                                             </td>
                                             <c:set var="items" value="${o.getOrderItems()}"/>
                                             <c:set var="itemsSize" value="${items.size()}"/>
                                             <td>
                                                 <c:set var="counter" value="1"/>
                                                 <span>
-                                                        <c:forEach var="item" items="${items}">
-                                                            ${item.apartmentId}
-                                                            <c:if test="${counter != itemsSize}">
-                                                                ,
-                                                            </c:if>
-                                                            <c:set var="counter" value="${counter + 1}"/>
-                                                        </c:forEach>
-                                                    </span>
+                                                    <c:forEach var="item" items="${items}">
+                                                        ${item.apartmentId}
+                                                        <c:if test="${counter != itemsSize}">
+                                                            ,
+                                                        </c:if>
+                                                        <c:set var="counter" value="${counter + 1}"/>
+                                                    </c:forEach>
+                                                </span>
                                             </td>
                                             <td>
                                                 <c:set var="totalOrderPrice" value="0"/>
@@ -170,6 +170,13 @@
                             <div class="container-sm justify-content-center">
                                 <jsp:include page="/JSP/fragments/pager.jsp"/>
                             </div>
+
+                            <nav class="container-sm justify-content-center">
+                                <a href="${'/app/users/' += userProfile.getId() += '/booking-requests?page=0&size=2'}">
+                                    <fmt:message key="user.links.booking.requests"/>
+                                </a>
+                            </nav>
+
                         </div>
                     </div>
                 </div>

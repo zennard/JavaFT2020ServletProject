@@ -2,13 +2,16 @@ const form = document.requestForm;
 const submitBtn = document.getElementById("submitBtn");
 const types = document.getElementsByName("type");
 const errorPanel = document.getElementById("error-panel");
+const noDemandsErrorEl = document.getElementsByClassName("no-demands-error").item(0);
+const fieldsEmptyErrorEl = document.getElementsByClassName("fields-empty-error").item(0);
+const unnecessaryFieldsErrorEl = document.getElementsByClassName("unnecessary-fields-error").item(0);
+const duplicateFieldsErrorEl = document.getElementsByClassName("duplicate-fields-error").item(0);
 let usedTypes = [];
 
 document.getElementById("submitBtn").addEventListener("click", onSubmit);
 
 function addInputRow(bedsCountLabel, typeLabel) {
     const inputForm = createInputForm(bedsCountLabel, typeLabel);
-    // form.insertAfter(inputForm, submitBtn);
     form.insertBefore(inputForm, submitBtn);
 }
 
@@ -67,31 +70,35 @@ function onSubmit() {
     }
 }
 
+//@todo
 function validate(bedsCountInputElems, selectTypeElems) {
     clearErrorPanel();
     if (!bedsCountInputElems || !selectTypeElems
         || bedsCountInputElems.length === 0 || selectTypeElems.length === 0) {
-        const errorNode = createErrorNode("Please add demands in your request!");
-        errorPanel.appendChild(errorNode);
+        if (!noDemandsErrorEl.classList.contains("visible")) {
+            noDemandsErrorEl.classList.remove("invisible");
+        }
         return false;
     }
     if (Array.from(bedsCountInputElems).filter(elem => !elem.value || elem.value === 0).length > 0
         || bedsCountInputElems.length !== selectTypeElems.length) {
-        const errorNode = createErrorNode("Some required fields are not filled!");
-        errorPanel.appendChild(errorNode);
+        if (!fieldsEmptyErrorEl.classList.contains("visible")) {
+            fieldsEmptyErrorEl.classList.remove("invisible");
+        }
         return false;
     }
     if (selectTypeElems.length > types.length) {
-        const errorNode = createErrorNode(`There is too much unnecessary fields, 
-        expected ${types.length}, but got ${selectTypeElems.length}`);
-        errorPanel.appendChild(errorNode);
+        if (!unnecessaryFieldsErrorEl.classList.contains("visible")) {
+            unnecessaryFieldsErrorEl.classList.remove("invisible");
+        }
         return false;
     }
 
     const selectedTypes = Array.from(selectTypeElems).map(select => select.value);
     if (selectedTypes.length !== new Set(selectedTypes).size) {
-        const errorNode = createErrorNode("Types have duplicates!");
-        errorPanel.appendChild(errorNode);
+        if (!duplicateFieldsErrorEl.classList.contains("visible")) {
+            duplicateFieldsErrorEl.classList.remove("invisible");
+        }
         return false;
     }
     return form.checkValidity();
@@ -105,15 +112,16 @@ function createLabelForInput(input, labelValue) {
     return label;
 }
 
-function createErrorNode(text) {
-    const paragraph = document.createElement("p");
-    paragraph.classList.add("alert", "alert-danger");
-    paragraph.textContent = text;
-    return paragraph;
-}
-
 function clearErrorPanel() {
-    errorPanel.innerHTML = "";
+    console.log(noDemandsErrorEl);
+    console.log(fieldsEmptyErrorEl);
+    console.log(unnecessaryFieldsErrorEl);
+    console.log(duplicateFieldsErrorEl);
+
+    noDemandsErrorEl.classList.add("invisible");
+    fieldsEmptyErrorEl.classList.add("invisible");
+    unnecessaryFieldsErrorEl.classList.add("invisible");
+    duplicateFieldsErrorEl.classList.add("invisible");
 }
 
 function createFormGroupDiv() {

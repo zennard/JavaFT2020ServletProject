@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ValidationResult {
     private static final Logger LOGGER = LogManager.getLogger(ValidationResult.class);
-    List<String> errors;
+    private final List<String> errors;
 
     public ValidationResult() {
         errors = new ArrayList<>();

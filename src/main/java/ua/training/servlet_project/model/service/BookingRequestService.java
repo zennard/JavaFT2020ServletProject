@@ -39,6 +39,20 @@ public class BookingRequestService {
                 requestsPage.getTotalPages());
     }
 
+    public Page<BookingRequestDTO> getAllBookingRequestsByUserId(Pageable pageable, Long userId) {
+        Page<BookingRequest> requestsPage;
+        try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {
+            requestsPage = bookingRequestDao.findAllByUserId(userId, pageable);
+        }
+
+        List<BookingRequestDTO> requestsDTO = requestsPage.getContent().stream()
+                .map(this::getBookingRequestDTO)
+                .collect(Collectors.toList());
+
+        return new Page<>(requestsDTO, requestsPage.getPageable(),
+                requestsPage.getTotalPages());
+    }
+
     private BookingRequestDTO getBookingRequestDTO(BookingRequest request) {
         List<BookingRequestItem> items;
         try (BookingRequestItemDao bookingRequestItemDao = daoFactory.createBookingRequestItemDao()) {

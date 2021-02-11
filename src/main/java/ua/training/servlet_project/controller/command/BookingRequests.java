@@ -14,7 +14,7 @@ import static ua.training.servlet_project.model.util.RequestConverter.parseBooki
 import static ua.training.servlet_project.model.util.RequestParamsParser.parsePageableFromRequest;
 
 public class BookingRequests implements Command {
-    private static final Logger LOGGER = LogManager.getLogger(BookingRequestCreation.class);
+    private static final Logger LOGGER = LogManager.getLogger(BookingRequests.class);
     private static final String BOOKING_REQUEST_CREATION_PAGE_REDIRECT = "redirect:/booking-requests/create";
     private static final String BOOKING_REQUESTS_PAGE = "/JSP/booking_requests.jsp";
     private final BookingRequestService bookingRequestService;

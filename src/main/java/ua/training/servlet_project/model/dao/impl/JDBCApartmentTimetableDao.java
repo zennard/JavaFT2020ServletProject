@@ -24,9 +24,14 @@ public class JDBCApartmentTimetableDao implements ApartmentTimetableDao {
 
     @Override
     public Optional<ApartmentTimetable> findById(Long id) {
+        LinkedList<Object> objects = new LinkedList<>();
+
         Optional<ApartmentTimetable> apartmentTimetable = Optional.empty();
 
-        try (PreparedStatement ps = connection.prepareCall("SELECT * FROM apartment_timetable WHERE id = ?")) {
+        try (PreparedStatement ps = connection.prepareCall(
+                "SELECT id AS slot_id, starts_at, ends_at," +
+                        " status, apartment_id" +
+                        " FROM apartment_timetable WHERE id = ?")) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
             ApartmentTimetableMapper mapper = new ApartmentTimetableMapper();

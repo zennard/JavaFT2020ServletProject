@@ -110,6 +110,50 @@ public class JDBCBookingRequestDao implements BookingRequestDao {
     }
 
     @Override
+    public Page<BookingRequest> findAllByUserId(Long userId, Pageable pageable) {
+        Map<Long, BookingRequest> requests = new LinkedHashMap<>();
+        int totalPages = 0;
+
+        try (PreparedStatement ps = connection.prepareCall(
+                "SELECT * FROM booking_request r " +
+                        "WHERE r.user_id = ? " +
+                        "ORDER BY r.id " +
+                        "LIMIT ? " +
+                        "OFFSET ? ");
+             PreparedStatement countQuery = connection.prepareCall(
+                     "SELECT COUNT(*) FROM booking_request r " +
+                             "WHERE r.user_id = ? "
+             )
+        ) {
+            ps.setLong(1, userId);
+            ps.setInt(2, pageable.getPageSize());
+            ps.setInt(3, pageable.getPageNumber() * pageable.getPageSize());
+
+            countQuery.setLong(1, userId);
+
+            ResultSet rs = ps.executeQuery();
+            ResultSet totalElementsResultSet = countQuery.executeQuery();
+
+            BookingRequestMapper requestMapper = new BookingRequestMapper();
+            while (rs.next()) {
+                BookingRequest request = requestMapper
+                        .extractFromResultSet(rs);
+                requestMapper
+                        .makeUnique(requests, request);
+            }
+
+            if (totalElementsResultSet.next()) {
+                totalPages = requestMapper.getTotalPages(totalElementsResultSet,
+                        COUNT_COLUMN_NAME, pageable.getPageSize());
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex);
+            throw new RuntimeException(ex);
+        }
+        return new Page<>(new ArrayList<>(requests.values()), pageable, totalPages);
+    }
+
+    @Override
     public void update(BookingRequest entity) {
 
     }
