@@ -25,6 +25,10 @@ public class OrderService {
         daoFactory = DaoFactory.getInstance();
     }
 
+    public OrderService(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
     public Long createNewOrder(OrderCreationDTO orderDTO) {
         orderDTO.getOrderItems().stream()
                 .filter(item -> recordExists(orderDTO.getStartsAt(), orderDTO.getEndsAt(), item.getApartmentId()))
@@ -92,11 +96,10 @@ public class OrderService {
         }
     }
 
-    public boolean recordExists(LocalDateTime startsAt, LocalDateTime endsAt, Long apartmentId) {
+    private boolean recordExists(LocalDateTime startsAt, LocalDateTime endsAt, Long apartmentId) {
         List<ApartmentTimetable> schedule;
         try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {
-            schedule = apartmentTimetableDao.findAllScheduleByApartmentIdAndDate(
-                    startsAt, endsAt, apartmentId);
+            schedule = apartmentTimetableDao.findAllScheduleByApartmentIdAndDate(startsAt, endsAt, apartmentId);
         }
         return !schedule.isEmpty();
     }

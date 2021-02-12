@@ -25,6 +25,10 @@ public class BookingRequestService {
         daoFactory = DaoFactory.getInstance();
     }
 
+    public BookingRequestService(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
     public Page<BookingRequestDTO> getAllNewBookingRequests(Pageable pageable) {
         Page<BookingRequest> requestsPage;
         try (BookingRequestDao bookingRequestDao = daoFactory.createBookingRequestDao()) {

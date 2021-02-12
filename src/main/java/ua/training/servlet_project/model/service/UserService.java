@@ -33,6 +33,10 @@ public class UserService {
         daoFactory = DaoFactory.getInstance();
     }
 
+    public UserService(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
     public Optional<User> getUserByEmailAndPassword(UserLoginDTO newUser) {
         Optional<User> user;
 
@@ -49,22 +53,6 @@ public class UserService {
         User user;
         try (UserDao userDao = daoFactory.createUserDao()) {
             user = userDao.findById(id)
-                    .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE));
-        }
-
-        return UserProfileDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .role(user.getRole())
-                .build();
-    }
-
-    public UserProfileDTO getUserByEmail(String email) {
-        User user;
-        try (UserDao userDao = daoFactory.createUserDao()) {
-            user = userDao.findByEmail(email)
                     .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_BY_EMAIL_EXCEPTION_MESSAGE));
         }
 

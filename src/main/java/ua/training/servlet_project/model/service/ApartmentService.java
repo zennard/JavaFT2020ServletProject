@@ -37,6 +37,13 @@ public class ApartmentService {
         checkOutHours = Integer.valueOf(properties.getProperty("apartment.check.out.time"));
     }
 
+    public ApartmentService(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+        Properties properties = PropertiesLoader.getProperties("application.properties");
+        checkInHours = Integer.valueOf(properties.getProperty("apartment.check.in.time"));
+        checkOutHours = Integer.valueOf(properties.getProperty("apartment.check.out.time"));
+    }
+
     public Page<Apartment> getAllAvailableApartmentsByDate(Pageable pageable,
                                                            VacationDateDTO vacationDateDTO) {
         LocalDate startsAt = vacationDateDTO.getStartsAt();
@@ -78,15 +85,6 @@ public class ApartmentService {
         try (ApartmentTimetableDao apartmentTimetableDao = daoFactory.createApartmentTimetableDao()) {
             schedule = apartmentTimetableDao.findAllScheduleByApartmentIdAndDate(checkIn, checkOut, apartment.getId());
         }
-
-        if (schedule.isEmpty()) {
-            schedule.add(
-                    ApartmentTimetable.builder()
-                            .status(RoomStatus.FREE)
-                            .build()
-            );
-        }
-
         LOGGER.info("{}", schedule);
 
         ApartmentDescription description;
@@ -97,6 +95,8 @@ public class ApartmentService {
 
         apartment.setSchedule(schedule);
         apartment.setDescription(description.getDescription());
+        
+        updateEmptySchedule(apartment, checkIn, checkOut);
 
         return apartment;
     }
