@@ -66,7 +66,7 @@
                         </c:if>
                         <c:if test="${not empty user}">
                             <li class="nav-item">
-                                <a class="${module == 'user' ? 'nav-link active' : 'nav-link'}"
+                                <a class="${param.module == 'user' ? 'nav-link active' : 'nav-link'}"
                                    href="${'/app/users/' += user.getId()}">
                                     <fmt:message key="navigation.section.user"/>
                                 </a>

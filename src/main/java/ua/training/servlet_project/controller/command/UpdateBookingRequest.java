@@ -34,9 +34,7 @@ public class UpdateBookingRequest implements Command {
                         .status(status)
                         .build()
         );
-        if (status.equals(RequestStatus.CLOSED)) {
-            
-        }
+
         return BOOKING_REQUESTS_PAGE_REDIRECT;
     }
 }

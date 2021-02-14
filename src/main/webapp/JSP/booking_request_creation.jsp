@@ -12,7 +12,7 @@
 <!DOCTYPE HTML>
 <html lang="${sessionScope.lang}">
     <head>
-        <title>Apartments</title>
+        <title>Booking request creation</title>
         <link rel="stylesheet" href="<c:url value = "/css/bootstrap.min.css"/>"
               crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
