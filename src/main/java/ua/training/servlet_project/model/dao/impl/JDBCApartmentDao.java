@@ -113,7 +113,19 @@ public class JDBCApartmentDao implements ApartmentDao {
                         "OFFSET ? ", pageable.getSortBy().toString().toLowerCase()));
              PreparedStatement countQuery = connection.prepareCall(
                      "SELECT COUNT(*) " +
-                             "FROM apartment"
+                             "FROM apartment ap " +
+                             "LEFT JOIN " +
+                             "    (SELECT starts_at, ends_at, status, apartment_id, t.id as slot_id " +
+                             "     FROM apartment a " +
+                             "     LEFT JOIN apartment_timetable t " +
+                             "     ON a.id = t.apartment_id " +
+                             "     WHERE is_available = true AND (" +
+                             "       t.starts_at <= ? AND t.ends_at >= ? OR " +
+                             "       t.starts_at BETWEEN ? AND ? OR " +
+                             "       t.ends_at BETWEEN ? AND ? " +
+                             "     ) " +
+                             ") AS r " +
+                             "ON ap.id = r.apartment_id "
              )
         ) {
             ps.setTimestamp(1, Timestamp.valueOf(checkIn));
@@ -124,6 +136,13 @@ public class JDBCApartmentDao implements ApartmentDao {
             ps.setTimestamp(6, Timestamp.valueOf(checkOut));
             ps.setInt(7, pageable.getPageSize());
             ps.setInt(8, pageable.getPageSize() * pageable.getPageNumber());
+
+            countQuery.setTimestamp(1, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(2, Timestamp.valueOf(checkOut));
+            countQuery.setTimestamp(3, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(4, Timestamp.valueOf(checkOut));
+            countQuery.setTimestamp(5, Timestamp.valueOf(checkIn));
+            countQuery.setTimestamp(6, Timestamp.valueOf(checkOut));
 
             ResultSet rs = ps.executeQuery();
             ResultSet totalElementsResultSet = countQuery.executeQuery();
